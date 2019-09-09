@@ -57,6 +57,18 @@ const csv2TidyBlocksDataFrame = (text, parser) => {
 }
 
 /**
+ * @param arr the array of objects to convert missing value fields
+ * if na, null or - replace with undefined
+ */
+const missingValues = (arr) => {
+  arr.map((obj) =>  Object.keys(obj).forEach(key => 
+    (obj[key] === "na" || 
+    obj[key] === null || 
+    obj[key] === "-") ? obj[key] = undefined : key));
+  return test;
+}
+
+/**
  * Get the prefix for registering blocks.
  * @param {string} fill Comma-separated list of quoted strings identifying pipelines to wait for.
  * @returns {string} Text to insert into generated code.
