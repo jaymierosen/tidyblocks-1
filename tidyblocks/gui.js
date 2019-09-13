@@ -8,6 +8,7 @@ const MULTIPLE_COLUMN_NAMES = /^ *([_A-Za-z][_A-Za-z0-9]*)( *, *[_A-Za-z][_A-Za-
 // Names of single-column fields in various blocks (for generating validators).
 const SINGLE_COLUMN_FIELDS = [
   'COLUMN',
+  'FORMAT',
   'LEFT_TABLE',
   'LEFT_COLUMN',
   'RIGHT_TABLE',
@@ -22,6 +23,70 @@ const SINGLE_COLUMN_FIELDS = [
 const MULTIPLE_COLUMN_FIELDS = [
   'MULTIPLE_COLUMNS'
 ]
+
+//--------------------------------------------------------------------------------
+
+/**
+ * Class to handle connections to the outside world.  (A different class with
+ * the same methods is used for testing purposes.)
+ */
+class GuiEnvironment {
+
+  constructor () {
+  }
+
+  /**
+   * Get the code to run.
+   * @returns {string} The code to run.
+   */
+  getCode () {
+    return Blockly.JavaScript.workspaceToCode(TidyBlocksWorkspace)
+  }
+
+  /**
+   * Read CSV from a URL and parse to create TidyBlocks data frame.
+   * @param {string} url URL to read from.
+   */
+  readCSV (url) {
+    const request = new XMLHttpRequest()
+    request.open('GET', url, false)
+    request.send(null)
+
+    if (request.status !== 200) {
+      console.log(`ERROR: ${request.status}`)
+      return null
+    }
+    else {
+      return csv2TidyBlocksDataFrame(request.responseText, Papa.parse)
+    }
+  }
+
+  /**
+   * Display a plot.
+   * @param {Object} spec Vega-Lite spec for plot with data filled in.
+   */
+  displayPlot (spec) {
+    vegaEmbed('#plotOutput', spec, {})
+  }
+
+  /**
+   * Display a table (as HTML).
+   * @param {Object} table JSON array of uniform objects.
+   */
+  displayTable (table) {
+    document.getElementById('dataOutput').innerHTML = json2table(table)
+  }
+
+  /**
+   * Display an error.
+   * @param {string} error The message to display.
+   */
+  displayError (error) {
+    document.getElementById('error').innerHTML = `<p>${error}</p>`
+  }
+}
+
+//--------------------------------------------------------------------------------
 
 /**
  * Set the display property of the two input toggleable panes.
@@ -75,7 +140,7 @@ const setUpBlockly = () => {
     }
   )
 
-  //TidyBlocksWorkspace.addChangeListener(Blockly.Events.disableOrphans)
+  TidyBlocksWorkspace.addChangeListener(Blockly.Events.disableOrphans)
 
   TidyBlocksWorkspace.addChangeListener((event) => {
     if (event.type === Blockly.Events.CREATE) {
@@ -117,37 +182,12 @@ const createValidator = (columnName, pattern) => {
 }
 
 /**
- * Callback for displaying a plot.
- * @param {Object} spec Vega-Lite spec for plot with data filled in.
- */
-const displayPlot = (spec) => {
-  vegaEmbed('#plotOutput', spec, {})
-}
-
-/**
- * Callback for displaying a table as HTML.
- * @param {Object} table JSON array of uniform objects.
- */
-const displayTable = (table) => {
-  document.getElementById('dataOutput').innerHTML = json2table(table)
-}
-
-/**
- * Callback for displaying an error online.
- * @param {string} error The message to display.
- */
-const displayError = (error) => {
-  document.getElementById('error').innerHTML = `<p>${error}</p>`
-}
-
-/**
  * Run the code generated from the user's blocks.
  * Depends on the global TidyBlocksWorkspace variable.
  */
 const runCode = () => {
   Blockly.JavaScript.INFINITE_LOOP_TRAP = null
-  TidyBlocksManager.run(() => Blockly.JavaScript.workspaceToCode(TidyBlocksWorkspace),
-                        displayTable, displayPlot, displayError, readCSV)
+  TidyBlocksManager.run(new GuiEnvironment())
 }
 
 /**
@@ -182,24 +222,6 @@ const loadCode = (fileList) => {
 }
 
 /**
- * Read CSV from a URL and parse to create TidyBlocks data frame.
- * @param {string} url URL to read from.
- */
-const readCSV = (url) => {
-  const request = new XMLHttpRequest()
-  request.open('GET', url, false)
-  request.send(null)
-
-  if (request.status !== 200) {
-    console.log(`ERROR: ${request.status}`)
-    return null
-  }
-  else {
-    return csv2TidyBlocksDataFrame(request.responseText, Papa.parse)
-  }
-}
-
-/**
  * Produce a human-friendly name for the type of a column.
  * @param value The value whose type is checked.
  * @returns The name of the type
@@ -217,6 +239,9 @@ const colTypeName = (value) => {
  * @param {JSON} json JSON object to convert to table.
  */
 const json2table = (json) => {
+  if (json.length === 0) {
+    return '<p>empty</p>'
+  }
   const cols = Object.keys(json[0])
   const headerRow = '<tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr>'
   const typeRow = '<tr>' + cols.map(c => `<th>${colTypeName(json[0][c])}</th>`).join('') + '</tr>'
