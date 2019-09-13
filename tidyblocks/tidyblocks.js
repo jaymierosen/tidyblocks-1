@@ -53,19 +53,24 @@ const csv2TidyBlocksDataFrame = (text, parser) => {
       transformHeader: transformHeader
     }
   )
-  return new TidyBlocksDataFrame(result.data)
+  return missingValues(result.data, "NA", undefined)
 }
 
 /**
- * @param arr the array of objects to convert missing value fields
- * if na, null or - replace with undefined
+ * @param object the array of objects to convert missing value fields
+ * @param search the missing value term to look for in the data
+ * @param replace desired output for missing value term
  */
-const missingValues = (arr) => {
-  arr.map((obj) =>  Object.keys(obj).forEach(key => 
-    (obj[key] === "na" || 
-    obj[key] === null || 
-    obj[key] === "-") ? obj[key] = undefined : key));
-  return test;
+function missingValues(object, search, replace) {
+  function iter(object) {
+      Object.keys(object).forEach(k => {
+          if (object[k] && typeof object[k] === 'object') return iter(object[k]);
+          if (object[k] === search) object[k] = replace;
+      });
+  }
+  
+  iter(object);
+  return new TidyBlocksDataFrame(object)
 }
 
 /**
@@ -931,7 +936,7 @@ class TidyBlocksDataFrame {
   //------------------------------------------------------------------------------
 
   /**
-   * Call a plotting function. This is in this class to support method chaining
+   * Carll a plotting function. This is in this class to support method chaining
    * and to decouple this class from the real plotting functions so that tests
    * will run.
    * @param {object} environment Connection to the outside world.
@@ -1099,6 +1104,7 @@ class TidyBlocksManagerClass {
         throw new Error('pipeline does not have a valid start block')
       }
       code = fixCode(code)
+      console.log(code)
       eval(code)
       while (this.queue.length > 0) {
         const func = this.queue.shift()
