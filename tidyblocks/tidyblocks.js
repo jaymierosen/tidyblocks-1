@@ -73,6 +73,15 @@ function missingValues(object, search, replace) {
   return new TidyBlocksDataFrame(object)
 }
 
+function missingValues(arr){
+  const temp = arr.map((obj) =>  Object.keys(obj).reduce((acc, ele) => {
+     acc[ele] = obj[ele];
+     acc[ele]  = acc[ele]  === "na" ? undefined : acc[ele] ;
+     return acc;
+   }, {}));
+  return new TidyBlocksDataFrame(temp)
+}
+
 /**
  * Get the prefix for registering blocks.
  * @param {string} fill Comma-separated list of quoted strings identifying pipelines to wait for.
