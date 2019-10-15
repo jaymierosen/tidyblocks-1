@@ -2,10 +2,6 @@ import React from "react";
 
 class ErrorArea extends React.Component {
 
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <div>
