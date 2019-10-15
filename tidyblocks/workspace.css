@@ -1,0 +1,23 @@
+.blocklyTreeSeparator {
+  border-bottom: solid 2p #F8FAFB;
+ }
+ 
+ 
+ .blocklyFlyoutBackground {
+  fill #F8FAFB;
+  fill-opacity: .95;
+ }
+ 
+ 
+ .blocklyToolboxDiv {
+  background: #F8FAFB;
+  fill: #F8FAFB;
+  fill-opacity: .95;
+  color: #F8FAFB;
+ }
+ 
+ 
+ .automation-setting-container {
+  fill: #F8FAFB;
+  fill-opacity: .95;
+ }
