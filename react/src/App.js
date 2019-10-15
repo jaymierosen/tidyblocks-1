@@ -28,6 +28,7 @@ const styles = theme => ({
   }
 });
 
+
 class BlocklyEnvironment extends React.Component {
 
   constructor(props) {
@@ -61,6 +62,11 @@ class BlocklyEnvironment extends React.Component {
   }
 
   runCode() {
+    
+    // get code, plot, error, xml, and table all from blockly
+    // then use them to change the state of the tabs
+    // maybe create a TidyBlocksClass that has code, plot, error, xml, and table methods?
+
     let code = "new code"
     let plot = "new plot"
     let error = "new error"
