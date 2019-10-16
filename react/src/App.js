@@ -97,7 +97,7 @@ class BlocklyEnvironment extends React.Component {
     return(
       <div>
 
-      <NavBar table={this.state.table}/>
+      <NavBar table={this.state.table} plot={this.state.plot} xml={this.state.xml}/>
 
       <SplitterLayout  primaryMinSize={200} secondaryMinSize={0}>
       <div className="leftPane">

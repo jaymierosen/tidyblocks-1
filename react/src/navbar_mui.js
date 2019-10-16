@@ -84,7 +84,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function PrimarySearchAppBar({table}) {
+export default function PrimarySearchAppBar({table, plot, xml}) {
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -120,7 +120,7 @@ export default function PrimarySearchAppBar({table}) {
         <StyledMenuItem>
           <div
             onClick={() => {
-              console.log("save xml");
+              console.log({xml});
             }}
           >
           <ListItemText primary="Worskpace" />
@@ -139,7 +139,7 @@ export default function PrimarySearchAppBar({table}) {
         <StyledMenuItem>
         <div
             onClick={() => {
-              console.log("save plot");
+              console.log({plot});
             }}
         >
           <ListItemText primary="Plot" />
