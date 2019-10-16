@@ -1,22 +1,16 @@
 import React from 'react';
 import SplitterLayout from "react-splitter-layout";
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import Fab from "@material-ui/core/Fab";
 import { withStyles } from '@material-ui/styles';
 import PropTypes from 'prop-types';
 
 import BlocklyArea from './blocklyArea.js'
-import TextArea from './textArea'
-import PlotArea from './plotArea'
-import ErrorArea from './errorArea.js'
-import DataArea from './dataArea'
 import NavBar from "./navbar_mui"
 import DisplayArea from "./displayArea"
 import { ThemeProvider } from "@material-ui/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
 
 import "./splitter-style-sheet.css";
-import "react-tabs/style/react-tabs.css";
 
 const theme = createMuiTheme({
   breakpoints: {
