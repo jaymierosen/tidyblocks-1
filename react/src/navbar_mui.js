@@ -84,7 +84,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function PrimarySearchAppBar() {
+export default function PrimarySearchAppBar({table}) {
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -130,7 +130,7 @@ export default function PrimarySearchAppBar() {
         <StyledMenuItem>
           {/* In stateful components I could put this.props.table here, 
           but how does this translate to a functional component? */}
-            <CSVLink data={"this is a test"}>
+            <CSVLink data={table}>
             <ListItemText primary="Data" />
           </CSVLink>
         </StyledMenuItem>

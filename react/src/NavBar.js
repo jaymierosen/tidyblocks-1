@@ -1,6 +1,31 @@
 import React from "react";
 import { CSVLink } from "react-csv";
 
+
+/* 
+PLOT AREA TO PDF
+https://stackoverflow.com/questions/53117630/generating-pdf-from-html-in-react-using-html2canvas-and-jspdf
+
+import { View as ViewPDF } from '@react-pdf/renderer';
+import { RENDERING_CONTEXT, withRenderingContext } from '../RenderingContext';
+
+class View extends React.Component {
+  render() {
+    const { renderingContext, children, className, style } = this.props;
+    const isPdf = renderingContext === RENDERING_CONTEXT.PDF;
+    return isPdf
+      ? <ViewPDF className={className} style={style}>
+          {children}
+        </ViewPDF>
+      : <div className={className} style {style}>
+          {children}
+        </div>;
+  }
+}
+*/
+
+export default withRenderingContext(View);
+
 class NavBar extends React.Component {
 
   constructor(props) {
@@ -9,8 +34,8 @@ class NavBar extends React.Component {
     this.loadCode = this.loadCode.bind(this)
   }
 
-  loadCode(fileList) {
-    const file = fileList[0]
+  loadCode() {
+    // print this.props.xml to file
   }
 
   render() {
@@ -18,20 +43,18 @@ class NavBar extends React.Component {
     <div>
 
     <div>
-    {/* link.setAttribute */}
+    {/* look into link.setAttribute from old tidyblocks repo*/}
     <button>Download XML</button>
 
     <CSVLink data={this.props.table}>
     <button>Download CSV</button>
     </CSVLink>
 
-    {/* html2canvas */}
     <button>Download Plot</button>
     </div>
 
     <div>
-    {/* link.setAttribute */}
-    <button onClick={this.loadCode}>Upload XML</button>
+    <button>Upload XML</button>
     </div>
 
     </div>
@@ -39,4 +62,4 @@ class NavBar extends React.Component {
   }
 }
 
-export default NavBar;
+export default NavBar2;
