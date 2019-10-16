@@ -332,7 +332,7 @@ class BlocklyEnvironment extends React.Component {
       </div>
 
       <div className ="rightPane">
-        <DisplayArea code={this.state.code}/>
+        <DisplayArea code={this.state.code} plot={this.state.plot} dataFrame={this.state.table} error={this.state.error}/>
       </div>
       </SplitterLayout>
       </ThemeProvider>

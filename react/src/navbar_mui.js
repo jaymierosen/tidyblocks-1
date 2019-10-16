@@ -77,7 +77,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   button: {
-    margin: theme.spacing(1)
+    margin: theme.spacing(3)
   },
   input: {
     display: "none"
@@ -170,10 +170,12 @@ export default function PrimarySearchAppBar({table, plot, xml}) {
 
           {/* re-route to jekyll Guide */}
           <Tooltip disableFocusListener title="Guide">
-            <IconButton color="inherit" href="./guide/" >
+            <IconButton color="inherit" className={classes.button} href="./guide/"  component="span">
               <HelpIcon/>
             </IconButton>
           </Tooltip>
+
+
           <div className={classes.grow} />
          <Typography className={classes.title} variant="h6" noWrap>
             TidyBlocks

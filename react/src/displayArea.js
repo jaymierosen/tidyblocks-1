@@ -5,6 +5,31 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
+import ChooseLanguage from "./chooseCodeLanguage"
+
+const TableHeader = () => {
+  return (
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Job</th>
+      </tr>
+    </thead>
+  )
+}
+
+const TableBody = props => {
+  const rows = props.dataFrame.map((row, index) => {
+    return (
+      <tr key={index}>
+        <td>{row.name}</td>
+        <td>{row.job}</td>
+      </tr>
+    )
+  })
+
+  return <tbody>{rows}</tbody>
+}
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -68,7 +93,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function ScrollableTabsButtonAuto({code}) {
+export default function ScrollableTabsButtonAuto({code, dataFrame, plot, error}) {
+
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -81,21 +107,25 @@ export default function ScrollableTabsButtonAuto({code}) {
       <div className={classes.demo2}>
         <StyledTabs value={value} onChange={handleChange}>
           <StyledTab label="Data" {...a11yProps(0)} />
-          <StyledTab label="Plots" {...a11yProps(1)} />
+          <StyledTab label="Plot" {...a11yProps(1)} />
           <StyledTab label="Debug" {...a11yProps(2)} />
           <StyledTab label="Text" {...a11yProps(3)} />
         </StyledTabs>
       </div>
       <TabPanel value={value} index={0}>
-        Data
+      <table>
+        <TableHeader />
+        <TableBody dataFrame={dataFrame} />
+      </table>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Test
+        {plot}
       </TabPanel>
       <TabPanel value={value} index={2}>
-        Error Messages
+      <div><pre>{error}</pre></div>
       </TabPanel>
       <TabPanel value={value} index={3}>
+        <ChooseLanguage />
       <div><pre>{code}</pre></div>
       </TabPanel>
     </div>

@@ -679,12 +679,6 @@ select::-ms-expand {
 [type=range] {
   width: 100%; }
 
-label {
-  font-weight: 600;
-  max-width: 100%;
-  display: block;
-  margin: 1rem 0 .5rem; }
-
 @media (min-width: 600px) {
   .split-form label {
     text-align: right;
@@ -719,7 +713,8 @@ table {
   max-width: 100%; }
 
 thead th {
-  border-bottom: 2px solid #dedede; }
+  border-bottom: 2px solid #dedede;
+  background-color: #F7F8F9 }
 
 tfoot th {
   border-top: 2px solid #dedede; }
@@ -730,7 +725,9 @@ td {
 th,
 td {
   text-align: left;
-  padding: .5rem; }
+  padding: .5rem; 
+  border-right: solid 1px #dedede; 
+  border-left: solid 1px #dedede;}
 
 caption {
   padding: 1rem 0;
