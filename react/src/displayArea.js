@@ -7,28 +7,24 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import ChooseLanguage from "./chooseCodeLanguage"
 
-const TableHeader = () => {
-  return (
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Job</th>
-      </tr>
-    </thead>
-  )
+const colTypeName = (value) => {
+  if (value instanceof Date) {
+    return 'datetime'
+  }
+  return typeof value
 }
 
-const TableBody = props => {
-  const rows = props.dataFrame.map((row, index) => {
-    return (
-      <tr key={index}>
-        <td>{row.name}</td>
-        <td>{row.job}</td>
-      </tr>
-    )
-  })
-
-  return <tbody>{rows}</tbody>
+const Json2table = ({dataFrame}) => {
+  if (dataFrame.length === 0) {
+    return ''
+  }
+  const cols = Object.keys(dataFrame[0])
+  const headerRow = '<tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr>'
+  const typeRow = '<tr>' + cols.map(c => `<th>${colTypeName(dataFrame[0][c])}</th>`).join('') + '</tr>'
+  const bodyRows = dataFrame.map(row => {
+    return '<tr>' + cols.map(c => `<td>${row[c]}</td>`).join('') + '</tr>'
+  }).join('')
+  return `<table><thead>${headerRow}</thead><tbody>${typeRow}${bodyRows}</tbody></table>`
 }
 
 function TabPanel(props) {
@@ -113,20 +109,17 @@ export default function ScrollableTabsButtonAuto({code, dataFrame, plot, error})
         </StyledTabs>
       </div>
       <TabPanel value={value} index={0}>
-      <table>
-        <TableHeader />
-        <TableBody dataFrame={dataFrame} />
-      </table>
+        <Json2table dataFrame={dataFrame} />
       </TabPanel>
       <TabPanel value={value} index={1}>
         {plot}
       </TabPanel>
       <TabPanel value={value} index={2}>
-      <div><pre>{error}</pre></div>
+      <div><pre className="errorCode">{error}</pre></div>
       </TabPanel>
       <TabPanel value={value} index={3}>
         <ChooseLanguage />
-      <div><pre>{code}</pre></div>
+      <div><pre className="prettifyCode">{code}</pre></div>
       </TabPanel>
     </div>
   );

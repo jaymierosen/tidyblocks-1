@@ -1,16 +1,200 @@
 import React from 'react';
+import BlocklyComponent, { Block, Value, Field, Shadow, Category } from './Blockly';
+import BlocklyJS from 'blockly/javascript';
+import PropTypes from 'prop-types';
+import Papa from 'papaparse'
+
+
 import SplitterLayout from "react-splitter-layout";
 import Fab from "@material-ui/core/Fab";
 import { withStyles } from '@material-ui/styles';
-import PropTypes from 'prop-types';
 
-import BlocklyArea from './blocklyArea.js'
 import NavBar from "./navbar_mui"
 import DisplayArea from "./displayArea"
 import { ThemeProvider } from "@material-ui/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
 
+import {TidyBlocksManagerClass, TidyBlocksDataFrame} from "./tidyblocks/tidyblocks"
+
+import './blocks/data_colors';
+import './generators/js/data_colors.js'
+import './blocks/data_double';
+import './generators/js/data_double'
+import './blocks/data_earthquakes';
+import './generators/js/data_earthquakes.js'
+import './blocks/data_iris';
+import './generators/js/data_iris.js'
+import './blocks/data_missing';
+import './generators/js/data_missing.js'
+import './blocks/data_mtcars';
+import './generators/js/data_mtcars.js'
+import './blocks/data_single';
+import './generators/js/data_single.js'
+import './blocks/data_toothGrowth';
+import './generators/js/data_toothGrowth.js'
+import './blocks/data_urlCSV';
+import './generators/js/data_urlCSV.js'
+
+import './blocks/plot_bar';
+import './generators/js/plot_bar.js';
+import './blocks/plot_boxplot';
+import './generators/js/plot_boxplot.js';
+import './blocks/plot_hist';
+import './generators/js/plot_hist.js';
+import './blocks/plot_point';
+import './generators/js/plot_point.js';
+import './blocks/plot_table';
+import './generators/js/plot_table.js';
+
+import './blocks/plumbing_join';
+import './generators/js/plumbing_join.js';
+import './blocks/plumbing_notify';
+import './generators/js/plumbing_notify.js';
+
+import './blocks/transform_filter';
+import './generators/js/transform_filter.js';
+import './blocks/transform_groupby';
+import './generators/js/transform_groupby.js';
+import './blocks/transform_mutate';
+import './generators/js/transform_mutate.js';
+import './blocks/transform_select';
+import './generators/js/transform_select.js';
+import './blocks/transform_sort';
+import './generators/js/transform_sort.js';
+import './blocks/transform_summarize_item';
+import './generators/js/transform_summarize_item.js';
+import './blocks/transform_summarize';
+import './generators/js/transform_summarize';
+import './blocks/transform_ungroup';
+import './generators/js/transform_ungroup.js';
+
+import './blocks/value_arithmetic';
+import './generators/js/value_arithmetic';
+import './blocks/value_boolean';
+import './generators/js/value_boolean';
+import './blocks/value_column';
+import './generators/js/value_column';
+import './blocks/value_compare';
+import './generators/js/value_compare';
+import './blocks/value_convert_datetime';
+import './generators/js/value_convert_datetime';
+import './blocks/value_convert';
+import './generators/js/value_convert';
+import './blocks/value_datetime';
+import './generators/js/value_datetime';
+import './blocks/value_ifelse';
+import './generators/js/value_ifelse'
+import './blocks/value_logical';
+import './generators/js/value_logical';
+import './blocks/value_negate';
+import './generators/js/value_negate';
+import './blocks/value_not';
+import './generators/js/value_not';
+import './blocks/value_number';
+import './generators/js/value_number';
+import './blocks/value_text';
+import './generators/js/value_text';
+import './blocks/value_type';
+import './generators/js/value_type';
+
 import "./splitter-style-sheet.css";
+
+const tbAssert = (check, message) => {
+  if (! check) {
+    throw new Error(message)
+  }
+}
+
+const run = (environment) => {
+    let code = fixCode(environment)
+    eval(code)
+}
+
+const csv2TidyBlocksDataFrame = (text, parser) => {
+
+  const seen = new Map() // global to transformHeader
+  const transformHeader = (name) => {
+    // Simple character fixes.
+    name = name
+      .trim()
+      .replace(/ /g, '_')
+      .replace(/[^A-Za-z0-9_]/g, '')
+
+    // Ensure header is not empty after character fixes.
+    if (name.length === 0) {
+      name = 'EMPTY'
+    }
+
+    // Name must start with underscore or letter.
+    if (! name.match(/^[_A-Za-z]/)) {
+      name = `_${name}`
+    }
+
+    // Name must be unique.
+    if (seen.has(name)) {
+      const serial = seen.get(name) + 1
+      seen.set(name, serial)
+      name = `${name}_${serial}`
+    }
+    else {
+      seen.set(name, 0)
+    }
+
+    return name
+  }
+
+  const result = parser(
+    text.trim(),
+    {
+      dynamicTyping: true,
+      header: true,
+      skipEmptyLines: true,
+      transformHeader: transformHeader,
+      transform: function(value) {
+        return (value === "NA" | value === null) ? undefined : value
+      },  
+    }
+  )
+  return new TidyBlocksDataFrame(result.data)
+}
+
+const TIDYBLOCKS_START = '/* tidyblocks start */'
+const TIDYBLOCKS_END = '/* tidyblocks end */'
+
+/**
+ * Singleton instance of manager.
+ */
+const TidyBlocksManager = new TidyBlocksManagerClass()
+
+const fixCode = (code) => {
+  if (! code.endsWith(TIDYBLOCKS_END)) {
+    const suffix = registerSuffix('')
+    code += `.plot(environment, {}) ${suffix}`
+  }
+  return code
+}
+
+const registerPrefix = (fill) => {
+  return `${TIDYBLOCKS_START} TidyBlocksManager.register([${fill}], () => {`
+}
+
+/**
+ * Get the suffix for registering blocks.
+ * @param {string} fill Single quoted string identifying pipeline produced.
+ * @returns {string} Text to insert into generated code.
+ */
+const registerSuffix = (fill) => {
+  return `}, [${fill}]) ${TIDYBLOCKS_END}`
+}
+
+const register = (depends, func, produces) => {
+  if (depends.length == 0) {
+    this.queue.push(func)
+  }
+  else {
+    this.waiting.set(func, new Set(depends))
+  }
+}
 
 const theme = createMuiTheme({
   breakpoints: {
@@ -245,6 +429,24 @@ const styles = theme => ({
   }
 });
 
+const readCSV = (url) => {
+
+  tbAssert((url !== "url") && (url.length > 0),
+           `Cannot fetch empty URL`)
+
+  const request = new XMLHttpRequest()
+  request.open('GET', url, false)
+  request.send(null)
+
+  if (request.status !== 200) {
+    console.log(`ERROR: ${request.status}`)
+    return null
+  }
+  else {
+    return csv2TidyBlocksDataFrame(request.responseText, Papa.parse)
+  }
+}
+
 
 class BlocklyEnvironment extends React.Component {
 
@@ -279,25 +481,19 @@ class BlocklyEnvironment extends React.Component {
   }
 
   runCode() {
-    
+
+    var code = BlocklyJS.workspaceToCode(this.simpleWorkspace.workspace);
+    run(code)
+    console.log(`${run(code)}`)
+
     // get code, plot, error, xml, and table all from blockly
     // then use them to change the state of the tabs
     // maybe create a TidyBlocksClass that has code, plot, error, xml, and table methods?
 
-    let code = "new code"
-    let plot = "new plot"
-    let error = "new error"
-    let xml = "new xml"
-    let table = [
-      {
-        name: 'Rick',
-        job: 'Scientist',
-      },
-      {
-        name: 'Morty',
-        job: 'Idiot'
-      }
-    ]
+    let plot = ""
+    let error = ""
+    let xml = ""
+    let table = ""
     this.setState({
       code: code,
       table: table,
@@ -316,10 +512,66 @@ class BlocklyEnvironment extends React.Component {
       <ThemeProvider theme={theme}>
       <NavBar table={this.state.table} plot={this.state.plot} xml={this.state.xml}/>
 
-      <SplitterLayout  primaryMinSize={200} secondaryMinSize={0}>
+      <SplitterLayout  primaryMinSize={180} secondaryMinSize={0}>
       <div className="leftPane">
-      <h1>Blockly</h1>
-      <BlocklyArea xml={this.state.xml} />
+
+      <div className="blocklyDiv">
+          <BlocklyComponent ref={e => this.simpleWorkspace = e} readOnly={false} move={{
+            scrollbars: true,
+            drag: true,
+            wheel: true,
+          }}>
+        <Category name="data" categorystyle="data">
+            <Block type="data_colors"></Block>
+            <Block type="data_double"></Block>
+            <Block type="data_earthquakes"></Block>
+            <Block type="data_iris"></Block>
+            <Block type="data_missing"></Block>
+            <Block type="data_mtcars"></Block>
+            <Block type="data_toothGrowth"></Block>
+            <Block type="data_single"></Block>
+            <Block type="data_urlCSV"></Block>
+          </Category>
+          <Category name="transform" categorystyle="transform">
+            <Block type="transform_filter"></Block>
+            <Block type="transform_groupBy"></Block>
+            <Block type="transform_mutate"></Block>
+            <Block type="transform_select"></Block>
+            <Block type="transform_sort"></Block>
+            <Block type="transform_summarize">
+            </Block>
+            <Block type="transform_summarize_item"></Block>
+            <Block type="transform_ungroup"></Block>
+          </Category>
+          <Category name="plot" categorystyle="plot">
+            <Block type="plot_bar"></Block>
+            <Block type="plot_boxplot"></Block>
+            <Block type="plot_hist"></Block>
+            <Block type="plot_point"></Block>
+            <Block type="plot_table"></Block>
+          </Category>
+          <Category name="plumbing" categorystyle="plumbing">
+            <Block type="plumbing_join"></Block>
+            <Block type="plumbing_notify"></Block>
+          </Category>
+          <Category name="values" categorystyle="values">
+            <Block type="value_arithmetic"></Block>
+            <Block type="value_boolean"></Block>
+            <Block type="value_column"></Block>
+            <Block type="value_compare"></Block>
+            <Block type="value_convert"></Block>
+            <Block type="value_convert_datetime"></Block>
+            <Block type="value_datetime"></Block>
+            <Block type="value_ifElse"></Block>
+            <Block type="value_negate"></Block>
+            <Block type="value_not"></Block>
+            <Block type="value_number"></Block>
+            <Block type="value_logical"></Block>
+            <Block type="value_text"></Block>
+            <Block type="value_type"></Block>
+          </Category>
+          </BlocklyComponent>
+          </div>
       <Fab className={classes.fab} onClick={this.runCode}>
         Run
       </Fab>

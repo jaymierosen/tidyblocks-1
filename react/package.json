@@ -5,6 +5,8 @@
   "dependencies": {
     "@material-ui/core": "^4.5.0",
     "@material-ui/icons": "^4.5.1",
+    "blockly": "^2.20190722.1",
+    "papaparse": "^5.0.0",
     "prop-type": "0.0.1",
     "prop-types": "^15.7.2",
     "react": "^16.10.2",
@@ -13,7 +15,8 @@
     "react-pdf": "^4.1.0",
     "react-scripts": "3.2.0",
     "react-splitter-layout": "^4.0.0",
-    "react-tabs": "^3.0.0"
+    "react-tabs": "^3.0.0",
+    "vega-lite": "^3.3.0"
   },
   "scripts": {
     "start": "react-scripts start",

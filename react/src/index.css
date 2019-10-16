@@ -750,3 +750,17 @@ caption {
 /**
  * Layout
  */
+
+.prettifyCode {
+  overflow-wrap: break-word;
+  padding: 20;
+  overflow: visible;
+ }
+
+ .errorCode {
+  color: red;
+ }
+
+ .layout-pane {
+   overflow-wrap:  break-word;
+ }
