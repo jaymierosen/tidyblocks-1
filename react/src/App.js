@@ -355,12 +355,59 @@ class BlocklyEnvironment extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      code: "This is where code will go",
+      error: "This is where errors will go",
+      plot: "This will display plots",
+      xml: "This is where blocks go",
+      table: [
+        {
+          name: 'Charlie',
+          job: 'Janitor',
+        },
+        {
+          name: 'Mac',
+          job: 'Bouncer',
+        },
+        {
+          name: 'Dee',
+          job: 'Aspring actress',
+        },
+        {
+          name: 'Dennis',
+          job: 'Bartender',
+        }
+      ]
+    }
+
     this.runCode = this.runCode.bind(this)
   }
 
   runCode() {
-    Blockly.JavaScript.INFINITE_LOOP_TRAP = null
-    TidyBlocksManager.run(new ReactEnvironment())
+    // Blockly.JavaScript.INFINITE_LOOP_TRAP = null
+    // TidyBlocksManager.run(new ReactEnvironment())
+
+    let code = Blockly.JavaScript.workspaceToCode(this.simpleWorkspace.workspace)
+    let error = "new error"
+    let plot = "new plot"
+    let xml = "new xml"
+    let table = [
+      {
+        name: 'Charlie',
+        job: 'Janitor',
+      },
+      {
+        name: 'Mac',
+        job: 'Bouncer',
+      }
+    ]
+    this.setState({
+      code: code,
+      error: error,
+      plot: plot,
+      xml: xml,
+      table: table
+    })
     }
 
   render() {
