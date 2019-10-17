@@ -6,26 +6,9 @@ import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import ChooseLanguage from "./chooseCodeLanguage"
-
-const colTypeName = (value) => {
-  if (value instanceof Date) {
-    return 'datetime'
-  }
-  return typeof value
-}
-
-const Json2table = ({dataFrame}) => {
-  if (dataFrame.length === 0) {
-    return ''
-  }
-  const cols = Object.keys(dataFrame[0])
-  const headerRow = '<tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr>'
-  const typeRow = '<tr>' + cols.map(c => `<th>${colTypeName(dataFrame[0][c])}</th>`).join('') + '</tr>'
-  const bodyRows = dataFrame.map(row => {
-    return '<tr>' + cols.map(c => `<td>${row[c]}</td>`).join('') + '</tr>'
-  }).join('')
-  return `<table><thead>${headerRow}</thead><tbody>${typeRow}${bodyRows}</tbody></table>`
-}
+import { JsonToTable } from "react-json-to-table";
+import "./index.css"
+import Table from './Table.js'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -109,7 +92,7 @@ export default function ScrollableTabsButtonAuto({code, dataFrame, plot, error})
         </StyledTabs>
       </div>
       <TabPanel value={value} index={0}>
-        <Json2table dataFrame={dataFrame} />
+      <Table data={dataFrame} />
       </TabPanel>
       <TabPanel value={value} index={1}>
         {plot}
