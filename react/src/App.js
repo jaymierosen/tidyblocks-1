@@ -356,19 +356,19 @@ class BlocklyEnvironment extends React.Component {
       plot: "",
       table: [
         {
-          one: 1,
-          two: 2,
+          one: 'Maya',
+          two: 'Dev',
         },
         {
-          one: 1,
-          two: 2,
+          one: 'Jordan',
+          two: 'Climber',
         }
       ],
       xml: ""
     }
-
-    this.runCode = this.runCode.bind(this)
-    this.getXML = this.getXML.bind(this)
+    
+      this.getCode = this.getCode.bind(this)
+      this.getXML = this.getXML.bind(this)
   }
 
   runCode() {
@@ -381,11 +381,17 @@ class BlocklyEnvironment extends React.Component {
     this.setState({ xml: xml })
   }
 
+  getCode() {
+    let code = Blockly.JavaScript.workspaceToCode(this.simpleWorkspace.workspace)
+    this.setState({ code: code })
+  }
+
   componentDidMount() {
     this.simpleWorkspace.workspace.addChangeListener((event) => {
        this.runCode();
        if (event.type != 'ui') {
         this.getXML()
+        this.getCode()
        }
     });
 }
