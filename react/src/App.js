@@ -1,9 +1,7 @@
 import React from 'react';
 import BlocklyComponent, { Block, Value, Field, Shadow, Category } from './Blockly';
 import Blockly from 'blockly'
-import BlocklyJS from 'blockly/javascript';
 import PropTypes from 'prop-types';
-import Papa from 'papaparse'
 import ReactEnvironment from './tidyblocks/ReactEnvironment'
 
 import SplitterLayout from "react-splitter-layout";
@@ -15,10 +13,7 @@ import DisplayArea from "./displayArea"
 import { ThemeProvider } from "@material-ui/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
 
-import {TidyBlocksManagerClass, 
-        TidyBlocksDataFrame,
-        tbAssert,
-        csv2TidyBlocksDataFrame} from "./tidyblocks/tidyblocks"
+import {TidyBlocksManagerClass } from "./tidyblocks/tidyblocks"
 
 import './blocks/data_colors';
 import './generators/js/data_colors.js'
@@ -356,59 +351,44 @@ class BlocklyEnvironment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      code: "This is where code will go",
-      error: "This is where errors will go",
-      plot: "This will display plots",
-      xml: "This is where blocks go",
+      code: "",
+      error: "",
+      plot: "",
       table: [
         {
-          name: 'Charlie',
-          job: 'Janitor',
+          one: 1,
+          two: 2,
         },
         {
-          name: 'Mac',
-          job: 'Bouncer',
-        },
-        {
-          name: 'Dee',
-          job: 'Aspring actress',
-        },
-        {
-          name: 'Dennis',
-          job: 'Bartender',
+          one: 1,
+          two: 2,
         }
-      ]
+      ],
+      xml: ""
     }
 
     this.runCode = this.runCode.bind(this)
+    this.getXML = this.getXML.bind(this)
   }
 
   runCode() {
-    // Blockly.JavaScript.INFINITE_LOOP_TRAP = null
-    // TidyBlocksManager.run(new ReactEnvironment())
+    Blockly.JavaScript.INFINITE_LOOP_TRAP = null
+    TidyBlocksManager.run(new ReactEnvironment())
+  }
 
-    let code = Blockly.JavaScript.workspaceToCode(this.simpleWorkspace.workspace)
-    let error = "new error"
-    let plot = "new plot"
-    let xml = "new xml"
-    let table = [
-      {
-        name: 'Charlie',
-        job: 'Janitor',
-      },
-      {
-        name: 'Mac',
-        job: 'Bouncer',
-      }
-    ]
-    this.setState({
-      code: code,
-      error: error,
-      plot: plot,
-      xml: xml,
-      table: table
-    })
-    }
+  getXML() {
+    let xml = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(this.simpleWorkspace.workspace))
+    this.setState({ xml: xml })
+  }
+
+  componentDidMount() {
+    this.simpleWorkspace.workspace.addChangeListener((event) => {
+       this.runCode();
+       if (event.type != 'ui') {
+        this.getXML()
+       }
+    });
+}
 
   render() {
 

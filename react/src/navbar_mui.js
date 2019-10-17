@@ -12,6 +12,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import SaveIcon from "@material-ui/icons/Save";
 import Tooltip from "@material-ui/core/Tooltip";
 import { CSVLink } from "react-csv";
+import { saveAs } from 'file-saver';
 
 const StyledMenu = withStyles({
   paper: {
@@ -85,6 +86,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function PrimarySearchAppBar({table, plot, xml}) {
+
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -117,33 +119,25 @@ export default function PrimarySearchAppBar({table, plot, xml}) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
+
+
         <StyledMenuItem>
-          <div
-            onClick={() => {
-              console.log({xml});
-            }}
-          >
-          <ListItemText primary="Worskpace" />
-          </div>
+          <ListItemText primary="Workspace" onClick={ () => {
+            var blob = new Blob([xml], {type: "text/plain;charset=utf-8"});
+            saveAs(blob, "Workspace.txt");
+          }
+        }/>
         </StyledMenuItem>
 
         <StyledMenuItem>
-          {/* In stateful components I could put this.props.table here, 
-          but how does this translate to a functional component? */}
             <CSVLink data={table}>
             <ListItemText primary="Data" />
           </CSVLink>
         </StyledMenuItem>
 
-        {/* will need to use html2canvas for plot */}
+      {/* look at react-plotly documentation */}
         <StyledMenuItem>
-        <div
-            onClick={() => {
-              console.log({plot});
-            }}
-        >
           <ListItemText primary="Plot" />
-          </div>
         </StyledMenuItem>
       </StyledMenu>
     </div>

@@ -94,7 +94,7 @@ export default function ScrollableTabsButtonAuto({code, dataFrame, plot, error})
       <TabPanel value={value} index={0}>
       <Table data={dataFrame} />
       </TabPanel>
-      <TabPanel value={value} index={1}>
+      <TabPanel id="plotPanel" value={value} index={1}>
         {plot}
       </TabPanel>
       <TabPanel value={value} index={2}>

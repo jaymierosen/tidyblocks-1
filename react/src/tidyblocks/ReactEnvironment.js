@@ -13,20 +13,12 @@ export default class ReactEnvironment extends React.Component {
         plot: "This will display plots",
         table: [
           {
-            name: 'Charlie',
-            job: 'Janitor',
+            name: 'Maya',
+            job: 'Dev',
           },
           {
-            name: 'Mac',
-            job: 'Bouncer',
-          },
-          {
-            name: 'Dee',
-            job: 'Aspring actress',
-          },
-          {
-            name: 'Dennis',
-            job: 'Bartender',
+            name: 'Jordan',
+            job: 'Climber',
           }
         ]
       }
@@ -38,14 +30,10 @@ export default class ReactEnvironment extends React.Component {
   }
 
   getCode() {
-    // I want this to update the code state in App.js
     let code = Blockly.JavaScript.workspaceToCode(this.simpleWorkspace.workspace)
+    this.setState({ code: code })
   }
 
-  /**
-   * Read CSV from a URL and parse to create TidyBlocks data frame.
-   * @param {string} url URL to read from.
-   */
   readCSV(url) {
     tbAssert((url !== "url") && (url.length > 0),
              `Cannot fetch empty URL`)
@@ -62,33 +50,18 @@ export default class ReactEnvironment extends React.Component {
       return csv2TidyBlocksDataFrame(request.responseText, Papa.parse)
     }
   }
-  
-    /**
-     * "Display" a table (record for testing purposes).
-     * @param data {Object} - data to record.
-     */
-    // I want this to update the table state in App.js
-    displayTable (data) {
-      this.setState({ data: data })
-    }
-  
-    /**
-     * "Display" a plot (record for testing purposes).
-     * @param spec {Object} - Vega-Lite spec for plot.
-     */
 
-   // I want this to update the plot state in App.js
-    displayPlot (spec) {
-      this.setState({ spec: spec })
-    }
-  
-    /**
-     * Display an error (record for testing purposes).
-     * @param error {string} - message to record.
-     */
+  displayTable (data) {
+    this.setState({ data: data })
+  }
 
-    // I want this to update the error state in App.js
-    displayError (error) {
-      this.setState({ error: error })
-    }
+ // I want this to update the plot state in App.js
+  displayPlot (spec) {
+    this.setState({ spec: spec })
+  }
+
+  // I want this to update the error state in App.js
+  displayError (error) {
+    this.setState({ error: error })
+  }
 }
