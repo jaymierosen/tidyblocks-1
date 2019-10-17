@@ -14,7 +14,10 @@ export default class ReactEnvironment extends React.Component {
         error: null
       }
   }
-
+  
+  // Not only do I want all these methods to update the state in App
+  // but this specific method is weird because the workspace lives in App
+  // so in this case code should be coming from the App component!
   getCode() {
     let code = Blockly.JavaScript.workspaceToCode(this.simpleWorkspace.workspace)
     this.setState({ code: code })
