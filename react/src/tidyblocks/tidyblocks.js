@@ -1,6 +1,3 @@
-
-import Papa from 'papaparse'
-
 /**
  * Prefix and suffix for well-formed pipelines.
  */
@@ -52,7 +49,7 @@ export const csv2TidyBlocksDataFrame = (text, parser) => {
     return name
   }
 
-  const result = Papa.parser(
+  const result = parser(
     text.trim(),
     {
       dynamicTyping: true,
@@ -89,7 +86,7 @@ export const registerSuffix = (fill) => {
  * Fix up runnable code if it isn't properly terminated yet.
  * @param {string} code Pipeline code to be terminated if necessary.
  */
-export const fixCode = (code) => {
+const fixCode = (code) => {
   if (! code.endsWith(TIDYBLOCKS_END)) {
     const suffix = registerSuffix('')
     code += `.plot(environment, {}) ${suffix}`
@@ -115,7 +112,7 @@ export const tbAssert = (check, message) => {
  * @param value What to check.
  * @returns The input value if it passes the test.
  */
-export const tbAssertNumber = (value) => {
+const tbAssertNumber = (value) => {
   tbAssert((value === MISSING) || (typeof value === 'number'),
            `Value ${value} is not missing or a number`)
   return value
@@ -126,7 +123,7 @@ export const tbAssertNumber = (value) => {
  * @param left One of the values.
  * @param right The other value.
  */
-export const tbAssertTypeEqual = (left, right) => {
+const tbAssertTypeEqual = (left, right) => {
   tbAssert((left === MISSING) || (right === MISSING) || (typeof left === typeof right),
            `Values ${left} and ${right} have different types`)
 }
@@ -139,7 +136,7 @@ export const tbAssertTypeEqual = (left, right) => {
  * @param {string} col The column of interest.
  * @return {number} Number of values.
  */
-export const tbCount = (rows, col) => {
+const tbCount = (rows, col) => {
   return rows.length
 }
 tbCount.colName = 'count'
@@ -150,7 +147,7 @@ tbCount.colName = 'count'
  * @param {string} col The column of interest.
  * @return {number} Maximum value.
  */
-export const tbMax = (rows, col) => {
+const tbMax = (rows, col) => {
   tbAssert(rows.length > 0,
            `Cannot calculate max of empty data`)
   return rows.reduce((soFar, row) => (row[col] > soFar) ? row[col] : soFar,
@@ -164,7 +161,7 @@ tbMax.colName = 'max'
  * @param {string} col The column of interest.
  * @return {number} Mean value.
  */
-export const tbMean = (rows, col) => {
+const tbMean = (rows, col) => {
   tbAssert(rows.length > 0,
            `Cannot calculate mean of empty data`)
   return rows.reduce((total, row) => total + row[col], 0) / rows.length
@@ -177,7 +174,7 @@ tbMean.colName = 'mean'
  * @param {string} col The column of interest.
  * @return {number} Median value.
  */
-export const tbMedian = (rows, col) => {
+const tbMedian = (rows, col) => {
   tbAssert(rows.length > 0,
            `Cannot calculate median of empty data`)
   const temp = [...rows]
@@ -200,7 +197,7 @@ tbMedian.colName = 'median'
  * @param {string} col The column of interest.
  * @return {number} Minimum value.
  */
-export const tbMin = (rows, col) => {
+const tbMin = (rows, col) => {
   tbAssert(rows.length > 0,
            `Cannot calculate min of empty data`)
   return rows.reduce((soFar, row) => (row[col] < soFar) ? row[col] : soFar,
@@ -214,7 +211,7 @@ tbMin.colName = 'min'
  * @param {string} col The column of interest.
  * @return {number} Standard deviation.
  */
-export const tbStd = (rows, col) => {
+const tbStd = (rows, col) => {
   tbAssert(rows.length > 0,
            `Cannot calculate standard deviation of empty data`)
   const values = rows.map(row => row[col])
@@ -228,7 +225,7 @@ tbStd.colName = 'std'
  * @param {string} col The column of interest.
  * @return {number} Total.
  */
-export const tbSum = (rows, col) => {
+const tbSum = (rows, col) => {
   tbAssert(rows.length > 0,
            `Cannot calculate sum of empty data`)
   return rows.reduce((total, row) => total + row[col], 0)
@@ -241,7 +238,7 @@ tbSum.colName = 'sum'
  * @param {string} col The column of interest.
  * @return {number} Variance.
  */
-export const tbVariance = (rows, col) => {
+const tbVariance = (rows, col) => {
   tbAssert(rows.length > 0,
            `Cannot calculate variance of empty data`)
   const values = rows.map(row => row[col])
@@ -249,7 +246,7 @@ export const tbVariance = (rows, col) => {
 }
 tbVariance.colName = 'variance'
 
-export const _variance = (values) => {
+const _variance = (values) => {
   const mean = values.reduce((total, val) => total + val, 0) / values.length
   const diffSq = values.map(val => (val - mean) ** 2)
   const result = diffSq.reduce((total, val) => total + val, 0) / diffSq.length
@@ -265,7 +262,7 @@ export const _variance = (values) => {
  * @param {function} getValue How to get desired value.
  * @returns Boolean value.
  */
-export const tbToBoolean = (blockId, row, getValue) => {
+const tbToBoolean = (blockId, row, getValue) => {
   const value = getValue(row)
   return (value === MISSING)
     ? MISSING
@@ -279,7 +276,7 @@ export const tbToBoolean = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value (must be string).
  * @returns Date object.
  */
-export const tbToDatetime = (blockId, row, getValue) => {
+const tbToDatetime = (blockId, row, getValue) => {
   const value = getValue(row)
   if (value === MISSING) {
     return MISSING
@@ -298,7 +295,7 @@ export const tbToDatetime = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Numeric value.
  */
-export const tbToNumber = (blockId, row, getValue) => {
+const tbToNumber = (blockId, row, getValue) => {
   let value = getValue(row)
   if (value === MISSING) {
     // keep as is
@@ -319,7 +316,7 @@ export const tbToNumber = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Text value.
  */
-export const tbToText = (blockId, row, getValue) => {
+const tbToText = (blockId, row, getValue) => {
   let value = getValue(row)
   if (value === MISSING) {
     // keep as is
@@ -339,7 +336,7 @@ export const tbToText = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Is value Boolean?
  */
-export const tbIsBoolean = (blockId, row, getValue) => {
+const tbIsBoolean = (blockId, row, getValue) => {
   return typeof getValue(row) === 'boolean'
 }
 
@@ -350,7 +347,7 @@ export const tbIsBoolean = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Is value numeric?
  */
-export const tbIsDateTime = (blockId, row, getValue) => {
+const tbIsDateTime = (blockId, row, getValue) => {
   return getValue(row) instanceof Date
 }
 
@@ -361,7 +358,7 @@ export const tbIsDateTime = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Is value missing?
  */
-export const tbIsMissing = (blockId, row, getValue) => {
+const tbIsMissing = (blockId, row, getValue) => {
   return getValue(row) === MISSING
 }
 
@@ -372,7 +369,7 @@ export const tbIsMissing = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Is value numeric?
  */
-export const tbIsNumber = (blockId, row, getValue) => {
+const tbIsNumber = (blockId, row, getValue) => {
   return typeof getValue(row) === 'number'
 }
 
@@ -383,7 +380,7 @@ export const tbIsNumber = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Is value text?
  */
-export const tbIsText = (blockId, row, getValue) => {
+const tbIsText = (blockId, row, getValue) => {
   return typeof getValue(row) === 'string'
 }
 
@@ -395,7 +392,7 @@ export const tbIsText = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Year as number.
  */
-export const tbToYear = (row, getValue) => {
+const tbToYear = (row, getValue) => {
   const value = getValue(row)
   tbAssert(value instanceof Date,
            `Expected date object not "${value}"`)
@@ -408,7 +405,7 @@ export const tbToYear = (row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Month as number.
  */
-export const tbToMonth = (row, getValue) => {
+const tbToMonth = (row, getValue) => {
   const value = getValue(row)
   tbAssert(value instanceof Date,
            `Expected date object not "${value}"`)
@@ -421,7 +418,7 @@ export const tbToMonth = (row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Day of month as number.
  */
-export const tbToDay = (row, getValue) => {
+const tbToDay = (row, getValue) => {
   const value = getValue(row)
   tbAssert(value instanceof Date,
            `Expected date object not "${value}"`)
@@ -434,7 +431,7 @@ export const tbToDay = (row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Day of week as number
  */
-export const tbToWeekDay = (row, getValue) => {
+const tbToWeekDay = (row, getValue) => {
   const value = getValue(row)
   tbAssert(value instanceof Date,
            `Expected date object not "${value}"`)
@@ -447,7 +444,7 @@ export const tbToWeekDay = (row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Hours portion of value.
  */
-export const tbToHours = (row, getValue) => {
+const tbToHours = (row, getValue) => {
   const value = getValue(row)
   tbAssert(value instanceof Date,
            `Expected date object not "${value}"`)
@@ -460,7 +457,7 @@ export const tbToHours = (row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Minutes portion of value.
  */
-export const tbToMinutes = (row, getValue) => {
+const tbToMinutes = (row, getValue) => {
   const value = getValue(row)
   tbAssert(value instanceof Date,
            `Expected date object not "${value}"`)
@@ -473,7 +470,7 @@ export const tbToMinutes = (row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Seconds portion of value.
  */
-export const tbToSeconds = (row, getValue) => {
+const tbToSeconds = (row, getValue) => {
   const value = getValue(row)
   tbAssert(value instanceof Date,
            `Expected date object not "${value}"`)
@@ -485,7 +482,7 @@ export const tbToSeconds = (row, getValue) => {
 /**
  * Numeric value if legal or missing value if not.
  */
-export const safeValue = (value) => {
+const safeValue = (value) => {
   return isFinite(value) ? value : MISSING
 }
 
@@ -495,7 +492,7 @@ export const safeValue = (value) => {
  * @param {string} column The field to look up.
  * @returns The value.
  */
-export const tbGet = (blockId, row, column) => {
+const tbGet = (blockId, row, column) => {
   tbAssert(column in row,
            `[block ${blockId}] no such column "${column}" (have [${Object.keys(row).join(',')}])`)
   return row[column]
@@ -509,7 +506,7 @@ export const tbGet = (blockId, row, column) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The sum.
  */
-export const tbAdd = (blockId, row, getLeft, getRight) => {
+const tbAdd = (blockId, row, getLeft, getRight) => {
   const left = tbAssertNumber(getLeft(row))
   const right = tbAssertNumber(getRight(row))
   return ((left === MISSING) || (right === MISSING))
@@ -525,7 +522,7 @@ export const tbAdd = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The quotient.
  */
-export const tbDiv = (blockId, row, getLeft, getRight) => {
+const tbDiv = (blockId, row, getLeft, getRight) => {
   const left = tbAssertNumber(getLeft(row))
   const right = tbAssertNumber(getRight(row))
   return ((left === MISSING) || (right === MISSING))
@@ -541,7 +538,7 @@ export const tbDiv = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The exponentiated value.
  */
-export const tbExp = (blockId, row, getLeft, getRight) => {
+const tbExp = (blockId, row, getLeft, getRight) => {
   const left = tbAssertNumber(getLeft(row))
   const right = tbAssertNumber(getRight(row))
   return ((left === MISSING) || (right === MISSING))
@@ -557,7 +554,7 @@ export const tbExp = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The remainder.
  */
-export const tbMod = (blockId, row, getLeft, getRight) => {
+const tbMod = (blockId, row, getLeft, getRight) => {
   const left = tbAssertNumber(getLeft(row))
   const right = tbAssertNumber(getRight(row))
   return ((left === MISSING) || (right === MISSING))
@@ -573,7 +570,7 @@ export const tbMod = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The product.
  */
-export const tbMul = (blockId, row, getLeft, getRight) => {
+const tbMul = (blockId, row, getLeft, getRight) => {
   const left = tbAssertNumber(getLeft(row))
   const right = tbAssertNumber(getRight(row))
   return ((left === MISSING) || (right === MISSING))
@@ -588,7 +585,7 @@ export const tbMul = (blockId, row, getLeft, getRight) => {
  * @param {function} getValue How to get the value from the row.
  * @returns The numerical negation.
  */
-export const tbNeg = (blockId, row, getValue) => {
+const tbNeg = (blockId, row, getValue) => {
   const value = tbAssertNumber(getValue(row))
   return (value === MISSING) ? MISSING : (- value)
 }
@@ -601,7 +598,7 @@ export const tbNeg = (blockId, row, getValue) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The difference.
  */
-export const tbSub = (blockId, row, getLeft, getRight) => {
+const tbSub = (blockId, row, getLeft, getRight) => {
   const left = tbAssertNumber(getLeft(row))
   const right = tbAssertNumber(getRight(row))
   return ((left === MISSING) || (right === MISSING))
@@ -619,7 +616,7 @@ export const tbSub = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The conjunction.
  */
-export const tbAnd = (blockId, row, getLeft, getRight) => {
+const tbAnd = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   return left && right
@@ -632,7 +629,7 @@ export const tbAnd = (blockId, row, getLeft, getRight) => {
  * @param {function} getValue How to get the value from the row.
  * @returns The logical conjunction.
  */
-export const tbNot = (blockId, row, getValue) => {
+const tbNot = (blockId, row, getValue) => {
   const value = getValue(row)
   return (value === MISSING) ? MISSING : ((! value) ? true : false)
 }
@@ -645,7 +642,7 @@ export const tbNot = (blockId, row, getValue) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The disjunction.
  */
-export const tbOr = (blockId, row, getLeft, getRight) => {
+const tbOr = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   return left || right
@@ -661,7 +658,7 @@ export const tbOr = (blockId, row, getLeft, getRight) => {
  * @returns The left (right) value if the condition is true (false).
  */
 
-export const tbIfElse = (rowId, row, getCond, getLeft, getRight) => {
+const tbIfElse = (rowId, row, getCond, getLeft, getRight) => {
   const cond = getCond(row)
   return (cond === MISSING)
     ? MISSING
@@ -678,7 +675,7 @@ export const tbIfElse = (rowId, row, getCond, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The comparison's result.
  */
-export const tbGt = (blockId, row, getLeft, getRight) => {
+const tbGt = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   tbAssertTypeEqual(left, right)
@@ -695,7 +692,7 @@ export const tbGt = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The comparison's result.
  */
-export const tbGeq = (blockId, row, getLeft, getRight) => {
+const tbGeq = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   tbAssertTypeEqual(left, right)
@@ -712,7 +709,7 @@ export const tbGeq = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The comparison's result.
  */
-export const tbEq = (blockId, row, getLeft, getRight) => {
+const tbEq = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   tbAssertTypeEqual(left, right)
@@ -729,7 +726,7 @@ export const tbEq = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The comparison's result.
  */
-export const tbNeq = (blockId, row, getLeft, getRight) => {
+const tbNeq = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   tbAssertTypeEqual(left, right)
@@ -746,7 +743,7 @@ export const tbNeq = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The comparison's result.
  */
-export const tbLeq = (blockId, row, getLeft, getRight) => {
+const tbLeq = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   tbAssertTypeEqual(left, right)
@@ -763,7 +760,7 @@ export const tbLeq = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The comparison's result.
  */
-export const tbLt = (blockId, row, getLeft, getRight) => {
+const tbLt = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   tbAssertTypeEqual(left, right)
@@ -1180,8 +1177,23 @@ export class TidyBlocksManagerClass {
    * @param {object} environment How to interact with the outside world.
    */
   run (environment) {
-      let code = fixCode(environment)
+    environment.displayError('') // clear legacy errors
+    try {
+      let code = environment.getCode()
+      if (! code.includes(TIDYBLOCKS_START)) {
+        throw new Error('pipeline does not have a valid start block')
+      }
+      code = fixCode(code)
+      eval(code)
+      while (this.queue.length > 0) {
+        const func = this.queue.shift()
+        func()
+      }
     }
+    catch (err) {
+      environment.displayError(err.message)
+    }
+  }
 }
 
 /**

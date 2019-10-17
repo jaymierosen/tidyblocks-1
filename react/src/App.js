@@ -1,9 +1,10 @@
 import React from 'react';
 import BlocklyComponent, { Block, Value, Field, Shadow, Category } from './Blockly';
+import Blockly from 'blockly'
 import BlocklyJS from 'blockly/javascript';
 import PropTypes from 'prop-types';
 import Papa from 'papaparse'
-
+import ReactEnvironment from './tidyblocks/ReactEnvironment'
 
 import SplitterLayout from "react-splitter-layout";
 import Fab from "@material-ui/core/Fab";
@@ -14,7 +15,10 @@ import DisplayArea from "./displayArea"
 import { ThemeProvider } from "@material-ui/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
 
-import {TidyBlocksManagerClass, TidyBlocksDataFrame} from "./tidyblocks/tidyblocks"
+import {TidyBlocksManagerClass, 
+        TidyBlocksDataFrame,
+        tbAssert,
+        csv2TidyBlocksDataFrame} from "./tidyblocks/tidyblocks"
 
 import './blocks/data_colors';
 import './generators/js/data_colors.js'
@@ -99,65 +103,6 @@ import './generators/js/value_type';
 
 import "./splitter-style-sheet.css";
 
-const tbAssert = (check, message) => {
-  if (! check) {
-    throw new Error(message)
-  }
-}
-
-const run = (environment) => {
-    let code = fixCode(environment)
-    eval(code)
-}
-
-const csv2TidyBlocksDataFrame = (text, parser) => {
-
-  const seen = new Map() // global to transformHeader
-  const transformHeader = (name) => {
-    // Simple character fixes.
-    name = name
-      .trim()
-      .replace(/ /g, '_')
-      .replace(/[^A-Za-z0-9_]/g, '')
-
-    // Ensure header is not empty after character fixes.
-    if (name.length === 0) {
-      name = 'EMPTY'
-    }
-
-    // Name must start with underscore or letter.
-    if (! name.match(/^[_A-Za-z]/)) {
-      name = `_${name}`
-    }
-
-    // Name must be unique.
-    if (seen.has(name)) {
-      const serial = seen.get(name) + 1
-      seen.set(name, serial)
-      name = `${name}_${serial}`
-    }
-    else {
-      seen.set(name, 0)
-    }
-
-    return name
-  }
-
-  const result = parser(
-    text.trim(),
-    {
-      dynamicTyping: true,
-      header: true,
-      skipEmptyLines: true,
-      transformHeader: transformHeader,
-      transform: function(value) {
-        return (value === "NA" | value === null) ? undefined : value
-      },  
-    }
-  )
-  return new TidyBlocksDataFrame(result.data)
-}
-
 const TIDYBLOCKS_START = '/* tidyblocks start */'
 const TIDYBLOCKS_END = '/* tidyblocks end */'
 
@@ -166,35 +111,11 @@ const TIDYBLOCKS_END = '/* tidyblocks end */'
  */
 const TidyBlocksManager = new TidyBlocksManagerClass()
 
-const fixCode = (code) => {
-  if (! code.endsWith(TIDYBLOCKS_END)) {
-    const suffix = registerSuffix('')
-    code += `.plot(environment, {}) ${suffix}`
-  }
-  return code
-}
-
-const registerPrefix = (fill) => {
-  return `${TIDYBLOCKS_START} TidyBlocksManager.register([${fill}], () => {`
-}
-
 /**
  * Get the suffix for registering blocks.
  * @param {string} fill Single quoted string identifying pipeline produced.
  * @returns {string} Text to insert into generated code.
  */
-const registerSuffix = (fill) => {
-  return `}, [${fill}]) ${TIDYBLOCKS_END}`
-}
-
-const register = (depends, func, produces) => {
-  if (depends.length == 0) {
-    this.queue.push(func)
-  }
-  else {
-    this.waiting.set(func, new Set(depends))
-  }
-}
 
 const theme = createMuiTheme({
   breakpoints: {
@@ -429,79 +350,18 @@ const styles = theme => ({
   }
 });
 
-const readCSV = (url) => {
-
-  tbAssert((url !== "url") && (url.length > 0),
-           `Cannot fetch empty URL`)
-
-  const request = new XMLHttpRequest()
-  request.open('GET', url, false)
-  request.send(null)
-
-  if (request.status !== 200) {
-    console.log(`ERROR: ${request.status}`)
-    return null
-  }
-  else {
-    return csv2TidyBlocksDataFrame(request.responseText, Papa.parse)
-  }
-}
-
 
 class BlocklyEnvironment extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      code: "This is where code will go",
-      error: "This is where errors will go",
-      plot: "This will display plots",
-      xml: "This is where blocks go",
-      table: [
-        {
-          name: 'Charlie',
-          job: 'Janitor',
-        },
-        {
-          name: 'Mac',
-          job: 'Bouncer',
-        },
-        {
-          name: 'Dee',
-          job: 'Aspring actress',
-        },
-        {
-          name: 'Dennis',
-          job: 'Bartender',
-        }
-      ]
-    }
-
     this.runCode = this.runCode.bind(this)
   }
 
   runCode() {
-
-    var code = BlocklyJS.workspaceToCode(this.simpleWorkspace.workspace);
-    run(code)
-    console.log(`${run(code)}`)
-
-    // get code, plot, error, xml, and table all from blockly
-    // then use them to change the state of the tabs
-    // maybe create a TidyBlocksClass that has code, plot, error, xml, and table methods?
-
-    let plot = ""
-    let error = ""
-    let xml = ""
-    let table = ""
-    this.setState({
-      code: code,
-      table: table,
-      plot: plot,
-      error: error,
-      xml: xml
-    })
-  }
+    Blockly.JavaScript.INFINITE_LOOP_TRAP = null
+    TidyBlocksManager.run(new ReactEnvironment())
+    }
 
   render() {
 
