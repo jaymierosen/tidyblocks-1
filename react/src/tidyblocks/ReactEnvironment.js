@@ -10,8 +10,8 @@ export default class ReactEnvironment extends React.Component {
       this.state = {
         code: "This is where code will go",
         error: "This is where errors will go",
-        spec: "This will display plots",
-        data: [
+        plot: "This will display plots",
+        table: [
           {
             name: 'Charlie',
             job: 'Janitor',
@@ -38,8 +38,8 @@ export default class ReactEnvironment extends React.Component {
   }
 
   getCode() {
+    // I want this to update the code state in App.js
     let code = Blockly.JavaScript.workspaceToCode(this.simpleWorkspace.workspace)
-    this.setState({ code: code })
   }
 
   /**
@@ -67,6 +67,7 @@ export default class ReactEnvironment extends React.Component {
      * "Display" a table (record for testing purposes).
      * @param data {Object} - data to record.
      */
+    // I want this to update the table state in App.js
     displayTable (data) {
       this.setState({ data: data })
     }
@@ -75,6 +76,8 @@ export default class ReactEnvironment extends React.Component {
      * "Display" a plot (record for testing purposes).
      * @param spec {Object} - Vega-Lite spec for plot.
      */
+
+   // I want this to update the plot state in App.js
     displayPlot (spec) {
       this.setState({ spec: spec })
     }
@@ -83,6 +86,8 @@ export default class ReactEnvironment extends React.Component {
      * Display an error (record for testing purposes).
      * @param error {string} - message to record.
      */
+
+    // I want this to update the error state in App.js
     displayError (error) {
       this.setState({ error: error })
     }
