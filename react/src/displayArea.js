@@ -102,7 +102,7 @@ export default function ScrollableTabsButtonAuto({code, dataFrame, plot, error})
       </TabPanel>
       <TabPanel value={value} index={3}>
         <ChooseLanguage />
-      <div><pre className="prettifyCode">{code}</pre></div>
+      <div className="codeSpace"><pre className="prettifyCode">{code}</pre></div>
       </TabPanel>
     </div>
   );

@@ -17,22 +17,36 @@ export default class Table extends React.Component {
   }
   
   getKeys = function(){
-    return Object.keys(this.props.data[0]);
+    if (this.props.data[0]) {
+      return Object.keys(this.props.data[0])
+  } else {
+    return ""
   }
+}
   
   getHeader = function(){
     var keys = this.getKeys();
-    return keys.map((key, index)=>{
-    return <th key={key}>{key}</th>
-    })
+
+    if (keys === "") {
+      return ""
+    } else {
+      return keys.map((key, index)=>{
+        return <th key={key}>{key}</th>
+      })
+    }
   }
 
   getRowsData = function(){
  var items = this.props.data;
  var keys = this.getKeys();
- return items.map((row, index)=>{
- return <tr key={index}><RenderRow key={index} data={row} keys={keys}/></tr>
- })
+
+ if (keys === "") {
+   return ""
+ } else {
+  return items.map((row, index)=>{
+    return <tr key={index}><RenderRow key={index} data={row} keys={keys}/></tr>
+    })
+ }
  }
   
   render() {

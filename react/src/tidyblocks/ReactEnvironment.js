@@ -8,25 +8,11 @@ export default class ReactEnvironment extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
-        code: "This is where code will go",
-        error: "This is where errors will go",
-        plot: "This will display plots",
-        table: [
-          {
-            name: 'Maya',
-            job: 'Dev',
-          },
-          {
-            name: 'Jordan',
-            job: 'Climber',
-          }
-        ]
+        code: null,
+        table: null,
+        plot: null,
+        error: null
       }
-      this.getCode = this.getCode.bind(this)
-      this.readCSV = this.readCSV.bind(this)
-      this.displayTable = this.displayTable.bind(this)
-      this.displayPlot = this.displayPlot.bind(this)
-      this.displayError = this.displayError.bind(this)
   }
 
   getCode() {
@@ -52,16 +38,28 @@ export default class ReactEnvironment extends React.Component {
   }
 
   displayTable (data) {
-    this.setState({ data: data })
+    this.setState({ table: data })
   }
 
  // I want this to update the plot state in App.js
   displayPlot (spec) {
-    this.setState({ spec: spec })
+    this.setState({ plot: spec })
   }
 
   // I want this to update the error state in App.js
   displayError (error) {
     this.setState({ error: error })
   }
+
+  /*
+  Can I use redux to access the state?
+  componentWillReceiveProps(nextProps) {
+    const {table: nextTable } = nextProps
+    const {table} = this.props
+
+    if (nextTable !== table) {
+      this.setState({table: nextTable})
+    }
+  }
+  */
 }

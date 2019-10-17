@@ -346,27 +346,19 @@ const styles = theme => ({
 });
 
 
-class BlocklyEnvironment extends React.Component {
+class App extends React.Component {
 
   constructor(props) {
     super(props);
+    // I want these to be inherited from ReactEnvironment;
+    // when runCode is clicked, ReactEnvironment is updated
     this.state = {
       code: "",
       error: "",
       plot: "",
-      table: [
-        {
-          one: 'Maya',
-          two: 'Dev',
-        },
-        {
-          one: 'Jordan',
-          two: 'Climber',
-        }
-      ],
+      table: "",
       xml: ""
     }
-    
       this.getCode = this.getCode.bind(this)
       this.getXML = this.getXML.bind(this)
   }
@@ -383,6 +375,7 @@ class BlocklyEnvironment extends React.Component {
 
   getCode() {
     let code = Blockly.JavaScript.workspaceToCode(this.simpleWorkspace.workspace)
+    console.log(code)
     this.setState({ code: code })
   }
 
@@ -480,8 +473,8 @@ class BlocklyEnvironment extends React.Component {
   }
 }
 
-BlocklyEnvironment.propTypes = {
+App.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(BlocklyEnvironment);
+export default withStyles(styles)(App);

@@ -87,7 +87,7 @@ a {
 abbr[title] {
   border-bottom: none;
   /* 1 */
-  text-decoration: underline;
+  text-decoration: none;
   /* 2 */
   text-decoration: underline dotted;
   /* 2 */ }
@@ -414,7 +414,7 @@ a {
   text-decoration: none; }
   a:hover, a:active, a:focus {
     color: #0246a2;
-    text-decoration: underline; }
+    text-decoration: none; }
 
 mark {
   background: #ffeea8;
@@ -755,6 +755,7 @@ caption {
   overflow-wrap: break-word;
   padding: 20;
   overflow: visible;
+  width: 50%
  }
 
  .errorCode {
@@ -763,4 +764,8 @@ caption {
 
  .layout-pane {
    overflow-wrap:  break-word;
+ }
+
+ .codeSpace {
+   width: 25%
  }
