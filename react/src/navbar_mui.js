@@ -88,7 +88,6 @@ const useStyles = makeStyles(theme => ({
 export default function PrimarySearchAppBar({table, plot, xml}) {
 
   const classes = useStyles();
-
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = event => {
@@ -104,8 +103,7 @@ export default function PrimarySearchAppBar({table, plot, xml}) {
       <AppBar position="static" style={{ background: "#1c313a" }}>
         <Toolbar>
         
-        {/* Create Save button with options to save XML, CSV, or Plot (PDF) */}
-        
+        {/* Create Save button with options to save XML, CSV, or Plot */}
         <div>
       <Tooltip disableFocusListener title="Save">
         <IconButton size="medium" onClick={handleClick} color="inherit">
@@ -142,7 +140,7 @@ export default function PrimarySearchAppBar({table, plot, xml}) {
       </StyledMenu>
     </div>
 
-    {/* Upload workspace, will need to update the XML/workspace area */}
+    {/* Upload workspace this needs to change the xml state - is that possible? */}
           <input
             accept="text/*"
             className={classes.input}
@@ -154,7 +152,6 @@ export default function PrimarySearchAppBar({table, plot, xml}) {
               <IconButton
                 color="inherit"
                 className={classes.button}
-                aria-label="upload picture"
                 component="span"
               >
                 <UploadIcon />
@@ -164,7 +161,7 @@ export default function PrimarySearchAppBar({table, plot, xml}) {
 
           {/* re-route to jekyll Guide */}
           <Tooltip disableFocusListener title="Guide">
-            <IconButton color="inherit" className={classes.button} href="./guide/"  component="span">
+            <IconButton color="inherit" className={classes.button} href="../../guide"  component="span">
               <HelpIcon/>
             </IconButton>
           </Tooltip>
