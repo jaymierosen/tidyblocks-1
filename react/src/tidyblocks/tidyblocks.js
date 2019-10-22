@@ -1,3 +1,5 @@
+import {TidyBlocksDataFrame} from "./TidyBlocksDataFrame"
+
 /**
  * Prefix and suffix for well-formed pipelines.
  */
@@ -7,7 +9,7 @@ const TIDYBLOCKS_END = '/* tidyblocks end */'
 /**
  * Value to indicate missing values.
  */
-const MISSING = undefined
+export const MISSING = undefined
 
 /**
  * Turn block of CSV text into TidyBlocksDataFrame. The parser argument should be Papa.parse;
@@ -86,7 +88,7 @@ export const registerSuffix = (fill) => {
  * Fix up runnable code if it isn't properly terminated yet.
  * @param {string} code Pipeline code to be terminated if necessary.
  */
-const fixCode = (code) => {
+export const fixCode = (code) => {
   if (! code.endsWith(TIDYBLOCKS_END)) {
     const suffix = registerSuffix('')
     code += `.plot(environment, {}) ${suffix}`
@@ -112,7 +114,7 @@ export const tbAssert = (check, message) => {
  * @param value What to check.
  * @returns The input value if it passes the test.
  */
-const tbAssertNumber = (value) => {
+export const tbAssertNumber = (value) => {
   tbAssert((value === MISSING) || (typeof value === 'number'),
            `Value ${value} is not missing or a number`)
   return value
@@ -123,7 +125,7 @@ const tbAssertNumber = (value) => {
  * @param left One of the values.
  * @param right The other value.
  */
-const tbAssertTypeEqual = (left, right) => {
+export const tbAssertTypeEqual = (left, right) => {
   tbAssert((left === MISSING) || (right === MISSING) || (typeof left === typeof right),
            `Values ${left} and ${right} have different types`)
 }
@@ -136,7 +138,7 @@ const tbAssertTypeEqual = (left, right) => {
  * @param {string} col The column of interest.
  * @return {number} Number of values.
  */
-const tbCount = (rows, col) => {
+export const tbCount = (rows, col) => {
   return rows.length
 }
 tbCount.colName = 'count'
@@ -147,7 +149,7 @@ tbCount.colName = 'count'
  * @param {string} col The column of interest.
  * @return {number} Maximum value.
  */
-const tbMax = (rows, col) => {
+export const tbMax = (rows, col) => {
   tbAssert(rows.length > 0,
            `Cannot calculate max of empty data`)
   return rows.reduce((soFar, row) => (row[col] > soFar) ? row[col] : soFar,
@@ -161,7 +163,7 @@ tbMax.colName = 'max'
  * @param {string} col The column of interest.
  * @return {number} Mean value.
  */
-const tbMean = (rows, col) => {
+export const tbMean = (rows, col) => {
   tbAssert(rows.length > 0,
            `Cannot calculate mean of empty data`)
   return rows.reduce((total, row) => total + row[col], 0) / rows.length
@@ -174,7 +176,7 @@ tbMean.colName = 'mean'
  * @param {string} col The column of interest.
  * @return {number} Median value.
  */
-const tbMedian = (rows, col) => {
+export const tbMedian = (rows, col) => {
   tbAssert(rows.length > 0,
            `Cannot calculate median of empty data`)
   const temp = [...rows]
@@ -197,7 +199,7 @@ tbMedian.colName = 'median'
  * @param {string} col The column of interest.
  * @return {number} Minimum value.
  */
-const tbMin = (rows, col) => {
+export const tbMin = (rows, col) => {
   tbAssert(rows.length > 0,
            `Cannot calculate min of empty data`)
   return rows.reduce((soFar, row) => (row[col] < soFar) ? row[col] : soFar,
@@ -211,7 +213,7 @@ tbMin.colName = 'min'
  * @param {string} col The column of interest.
  * @return {number} Standard deviation.
  */
-const tbStd = (rows, col) => {
+export const tbStd = (rows, col) => {
   tbAssert(rows.length > 0,
            `Cannot calculate standard deviation of empty data`)
   const values = rows.map(row => row[col])
@@ -225,7 +227,7 @@ tbStd.colName = 'std'
  * @param {string} col The column of interest.
  * @return {number} Total.
  */
-const tbSum = (rows, col) => {
+export const tbSum = (rows, col) => {
   tbAssert(rows.length > 0,
            `Cannot calculate sum of empty data`)
   return rows.reduce((total, row) => total + row[col], 0)
@@ -238,7 +240,7 @@ tbSum.colName = 'sum'
  * @param {string} col The column of interest.
  * @return {number} Variance.
  */
-const tbVariance = (rows, col) => {
+export const tbVariance = (rows, col) => {
   tbAssert(rows.length > 0,
            `Cannot calculate variance of empty data`)
   const values = rows.map(row => row[col])
@@ -246,7 +248,7 @@ const tbVariance = (rows, col) => {
 }
 tbVariance.colName = 'variance'
 
-const _variance = (values) => {
+export const _variance = (values) => {
   const mean = values.reduce((total, val) => total + val, 0) / values.length
   const diffSq = values.map(val => (val - mean) ** 2)
   const result = diffSq.reduce((total, val) => total + val, 0) / diffSq.length
@@ -262,7 +264,7 @@ const _variance = (values) => {
  * @param {function} getValue How to get desired value.
  * @returns Boolean value.
  */
-const tbToBoolean = (blockId, row, getValue) => {
+export const tbToBoolean = (blockId, row, getValue) => {
   const value = getValue(row)
   return (value === MISSING)
     ? MISSING
@@ -276,7 +278,7 @@ const tbToBoolean = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value (must be string).
  * @returns Date object.
  */
-const tbToDatetime = (blockId, row, getValue) => {
+export const tbToDatetime = (blockId, row, getValue) => {
   const value = getValue(row)
   if (value === MISSING) {
     return MISSING
@@ -295,7 +297,7 @@ const tbToDatetime = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Numeric value.
  */
-const tbToNumber = (blockId, row, getValue) => {
+export const tbToNumber = (blockId, row, getValue) => {
   let value = getValue(row)
   if (value === MISSING) {
     // keep as is
@@ -316,7 +318,7 @@ const tbToNumber = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Text value.
  */
-const tbToText = (blockId, row, getValue) => {
+export const tbToText = (blockId, row, getValue) => {
   let value = getValue(row)
   if (value === MISSING) {
     // keep as is
@@ -336,7 +338,7 @@ const tbToText = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Is value Boolean?
  */
-const tbIsBoolean = (blockId, row, getValue) => {
+export const tbIsBoolean = (blockId, row, getValue) => {
   return typeof getValue(row) === 'boolean'
 }
 
@@ -347,7 +349,7 @@ const tbIsBoolean = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Is value numeric?
  */
-const tbIsDateTime = (blockId, row, getValue) => {
+export const tbIsDateTime = (blockId, row, getValue) => {
   return getValue(row) instanceof Date
 }
 
@@ -358,7 +360,7 @@ const tbIsDateTime = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Is value missing?
  */
-const tbIsMissing = (blockId, row, getValue) => {
+export const tbIsMissing = (blockId, row, getValue) => {
   return getValue(row) === MISSING
 }
 
@@ -369,7 +371,7 @@ const tbIsMissing = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Is value numeric?
  */
-const tbIsNumber = (blockId, row, getValue) => {
+export const tbIsNumber = (blockId, row, getValue) => {
   return typeof getValue(row) === 'number'
 }
 
@@ -380,7 +382,7 @@ const tbIsNumber = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Is value text?
  */
-const tbIsText = (blockId, row, getValue) => {
+export const tbIsText = (blockId, row, getValue) => {
   return typeof getValue(row) === 'string'
 }
 
@@ -392,7 +394,7 @@ const tbIsText = (blockId, row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Year as number.
  */
-const tbToYear = (row, getValue) => {
+export const tbToYear = (row, getValue) => {
   const value = getValue(row)
   tbAssert(value instanceof Date,
            `Expected date object not "${value}"`)
@@ -405,7 +407,7 @@ const tbToYear = (row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Month as number.
  */
-const tbToMonth = (row, getValue) => {
+export const tbToMonth = (row, getValue) => {
   const value = getValue(row)
   tbAssert(value instanceof Date,
            `Expected date object not "${value}"`)
@@ -418,7 +420,7 @@ const tbToMonth = (row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Day of month as number.
  */
-const tbToDay = (row, getValue) => {
+export const tbToDay = (row, getValue) => {
   const value = getValue(row)
   tbAssert(value instanceof Date,
            `Expected date object not "${value}"`)
@@ -431,7 +433,7 @@ const tbToDay = (row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Day of week as number
  */
-const tbToWeekDay = (row, getValue) => {
+export const tbToWeekDay = (row, getValue) => {
   const value = getValue(row)
   tbAssert(value instanceof Date,
            `Expected date object not "${value}"`)
@@ -444,7 +446,7 @@ const tbToWeekDay = (row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Hours portion of value.
  */
-const tbToHours = (row, getValue) => {
+export const tbToHours = (row, getValue) => {
   const value = getValue(row)
   tbAssert(value instanceof Date,
            `Expected date object not "${value}"`)
@@ -457,7 +459,7 @@ const tbToHours = (row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Minutes portion of value.
  */
-const tbToMinutes = (row, getValue) => {
+export const tbToMinutes = (row, getValue) => {
   const value = getValue(row)
   tbAssert(value instanceof Date,
            `Expected date object not "${value}"`)
@@ -470,7 +472,7 @@ const tbToMinutes = (row, getValue) => {
  * @param {function} getValue How to get desired value.
  * @returns Seconds portion of value.
  */
-const tbToSeconds = (row, getValue) => {
+export const tbToSeconds = (row, getValue) => {
   const value = getValue(row)
   tbAssert(value instanceof Date,
            `Expected date object not "${value}"`)
@@ -482,7 +484,7 @@ const tbToSeconds = (row, getValue) => {
 /**
  * Numeric value if legal or missing value if not.
  */
-const safeValue = (value) => {
+export const safeValue = (value) => {
   return isFinite(value) ? value : MISSING
 }
 
@@ -492,7 +494,7 @@ const safeValue = (value) => {
  * @param {string} column The field to look up.
  * @returns The value.
  */
-const tbGet = (blockId, row, column) => {
+export const tbGet = (blockId, row, column) => {
   tbAssert(column in row,
            `[block ${blockId}] no such column "${column}" (have [${Object.keys(row).join(',')}])`)
   return row[column]
@@ -506,7 +508,7 @@ const tbGet = (blockId, row, column) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The sum.
  */
-const tbAdd = (blockId, row, getLeft, getRight) => {
+export const tbAdd = (blockId, row, getLeft, getRight) => {
   const left = tbAssertNumber(getLeft(row))
   const right = tbAssertNumber(getRight(row))
   return ((left === MISSING) || (right === MISSING))
@@ -522,7 +524,7 @@ const tbAdd = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The quotient.
  */
-const tbDiv = (blockId, row, getLeft, getRight) => {
+export const tbDiv = (blockId, row, getLeft, getRight) => {
   const left = tbAssertNumber(getLeft(row))
   const right = tbAssertNumber(getRight(row))
   return ((left === MISSING) || (right === MISSING))
@@ -538,7 +540,7 @@ const tbDiv = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The exponentiated value.
  */
-const tbExp = (blockId, row, getLeft, getRight) => {
+export const tbExp = (blockId, row, getLeft, getRight) => {
   const left = tbAssertNumber(getLeft(row))
   const right = tbAssertNumber(getRight(row))
   return ((left === MISSING) || (right === MISSING))
@@ -554,7 +556,7 @@ const tbExp = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The remainder.
  */
-const tbMod = (blockId, row, getLeft, getRight) => {
+export const tbMod = (blockId, row, getLeft, getRight) => {
   const left = tbAssertNumber(getLeft(row))
   const right = tbAssertNumber(getRight(row))
   return ((left === MISSING) || (right === MISSING))
@@ -570,7 +572,7 @@ const tbMod = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The product.
  */
-const tbMul = (blockId, row, getLeft, getRight) => {
+export const tbMul = (blockId, row, getLeft, getRight) => {
   const left = tbAssertNumber(getLeft(row))
   const right = tbAssertNumber(getRight(row))
   return ((left === MISSING) || (right === MISSING))
@@ -585,7 +587,7 @@ const tbMul = (blockId, row, getLeft, getRight) => {
  * @param {function} getValue How to get the value from the row.
  * @returns The numerical negation.
  */
-const tbNeg = (blockId, row, getValue) => {
+export const tbNeg = (blockId, row, getValue) => {
   const value = tbAssertNumber(getValue(row))
   return (value === MISSING) ? MISSING : (- value)
 }
@@ -598,7 +600,7 @@ const tbNeg = (blockId, row, getValue) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The difference.
  */
-const tbSub = (blockId, row, getLeft, getRight) => {
+export const tbSub = (blockId, row, getLeft, getRight) => {
   const left = tbAssertNumber(getLeft(row))
   const right = tbAssertNumber(getRight(row))
   return ((left === MISSING) || (right === MISSING))
@@ -616,7 +618,7 @@ const tbSub = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The conjunction.
  */
-const tbAnd = (blockId, row, getLeft, getRight) => {
+export const tbAnd = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   return left && right
@@ -629,7 +631,7 @@ const tbAnd = (blockId, row, getLeft, getRight) => {
  * @param {function} getValue How to get the value from the row.
  * @returns The logical conjunction.
  */
-const tbNot = (blockId, row, getValue) => {
+export const tbNot = (blockId, row, getValue) => {
   const value = getValue(row)
   return (value === MISSING) ? MISSING : ((! value) ? true : false)
 }
@@ -642,7 +644,7 @@ const tbNot = (blockId, row, getValue) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The disjunction.
  */
-const tbOr = (blockId, row, getLeft, getRight) => {
+export const tbOr = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   return left || right
@@ -658,7 +660,7 @@ const tbOr = (blockId, row, getLeft, getRight) => {
  * @returns The left (right) value if the condition is true (false).
  */
 
-const tbIfElse = (rowId, row, getCond, getLeft, getRight) => {
+export const tbIfElse = (rowId, row, getCond, getLeft, getRight) => {
   const cond = getCond(row)
   return (cond === MISSING)
     ? MISSING
@@ -675,7 +677,7 @@ const tbIfElse = (rowId, row, getCond, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The comparison's result.
  */
-const tbGt = (blockId, row, getLeft, getRight) => {
+export const tbGt = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   tbAssertTypeEqual(left, right)
@@ -692,7 +694,7 @@ const tbGt = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The comparison's result.
  */
-const tbGeq = (blockId, row, getLeft, getRight) => {
+export const tbGeq = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   tbAssertTypeEqual(left, right)
@@ -709,7 +711,7 @@ const tbGeq = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The comparison's result.
  */
-const tbEq = (blockId, row, getLeft, getRight) => {
+export const tbEq = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   tbAssertTypeEqual(left, right)
@@ -726,7 +728,7 @@ const tbEq = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The comparison's result.
  */
-const tbNeq = (blockId, row, getLeft, getRight) => {
+export const tbNeq = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   tbAssertTypeEqual(left, right)
@@ -743,7 +745,7 @@ const tbNeq = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The comparison's result.
  */
-const tbLeq = (blockId, row, getLeft, getRight) => {
+export const tbLeq = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   tbAssertTypeEqual(left, right)
@@ -760,7 +762,7 @@ const tbLeq = (blockId, row, getLeft, getRight) => {
  * @param {function} getRight How to get the right value from the row.
  * @returns The comparison's result.
  */
-const tbLt = (blockId, row, getLeft, getRight) => {
+export const tbLt = (blockId, row, getLeft, getRight) => {
   const left = getLeft(row)
   const right = getRight(row)
   tbAssertTypeEqual(left, right)
@@ -768,437 +770,3 @@ const tbLt = (blockId, row, getLeft, getRight) => {
     ? MISSING
     : (left < right)
 }
-
-//--------------------------------------------------------------------------------
-
-/**
- * Store a dataframe.
- */
-export class TidyBlocksDataFrame {
-
-  /**
-   * Construct a new dataframe.
-   * @param {Object[]} values The initial values (aliased).
-   */
-  constructor (values) {
-    this.data = values
-  }
-
-  //------------------------------------------------------------------------------
-
-  /**
-   * Filter rows, keeping those that pass a test.
-   * @param {function} op How to test rows.
-   * @returns A new dataframe.
-   */
-  filter (blockId, op) {
-    tbAssert(op, `[block ${blockId}] no operator for filter`)
-    const newData = this.data.filter(row => {
-      return op(row)
-    })
-    return new TidyBlocksDataFrame(newData)
-  }
-
-  /**
-   * Group by the values in a column, storing the result in a new _group_ column.
-   * @param {string} column The column that determines groups.
-   * @returns A new dataframe.
-   */
-  groupBy (blockId, column) {
-    tbAssert(column.length !== 0,
-             `[block ${blockId}] empty column name for grouping`)
-    const seen = new Map()
-    let groupId = 0
-    const grouped = this.data.map(row => {
-      row = {...row}
-      const value = tbGet(blockId, row, column)
-      if (! seen.has(value)) {
-        seen.set(value, groupId)
-        groupId += 1
-      }
-      row._group_ = seen.get(value)
-      return row
-    })
-    return new TidyBlocksDataFrame(grouped)
-  }
-
-  /**
-   * Create a new column by operating on existing columns.
-   * @param {string} newName New column's name.
-   * @param {function} op How to create new values from a row.
-   * @returns A new dataframe.
-   */
-  mutate (blockId, newName, op) {
-    tbAssert(newName,
-             `[block ${blockId}] empty new column name for mutate`)
-    tbAssert(typeof op === 'function',
-             `[block ${blockId}] new value is not a function`)
-    const newData = this.data.map(row => {
-      const newRow = {...row}
-      newRow[newName] = op(row)
-      return newRow
-    })
-    return new TidyBlocksDataFrame(newData)
-  }
-
-  /**
-   * Select columns.
-   * @param {string[]} columns The names of the columns to keep.
-   * @returns A new dataframe.
-   */
-  select (blockId, columns) {
-    tbAssert(columns.length !== 0,
-             `[block ${blockId}] no columns specified for select`)
-    tbAssert(this.hasColumns(columns),
-             `[block ${blockId}] unknown column(s) [${columns}] in select`)
-    const newData = this.data.map(row => {
-      const result = {}
-      columns.forEach(key => {
-        result[key] = tbGet(blockId, row, key)
-      })
-      return result
-    })
-    return new TidyBlocksDataFrame(newData)
-  }
-
-  /**
-   * Sort data by values in specified columns.
-   * @param {string[]} columns Names of columns to sort by.
-   * @returns New data frame with sorted data.
-   */
-  sort (blockId, columns, reverse) {
-    tbAssert(columns.length !== 0,
-             `[block ${blockId}] no columns specified for sort`)
-    tbAssert(this.hasColumns(columns),
-             `[block ${blockId}] unknown column(s) [${columns}] in sort`)
-    const result = [...this.data]
-    result.sort((left, right) => {
-      return columns.reduce((soFar, col) => {
-        if (soFar !== 0) {
-          return soFar
-        }
-        if (left[col] < right[col]) {
-          return -1
-        }
-        if (left[col] > right[col]) {
-          return 1
-        }
-        return 0
-      }, 0)
-    })
-    if (reverse) {
-      result.reverse()
-    }
-    return new TidyBlocksDataFrame(result)
-  }
-
-  /**
-   * Summarize values (possibly grouped).
-   * @param {string} operations A list of [blockId, function, columnName] pairs.
-   * @return A new dataframe.
-   */
-  summarize (blockId, ...operations) {
-    // Handle empty case.
-    if (this.data.length === 0) {
-      return new TidyBlocksDataFrame([])
-    }
-
-    // Put data into groups.
-    const [wasGrouped, groups] = this._groupify()
-
-    // Summarize by group and function.
-    const summarized = {}
-    operations.forEach(([subBlockId, func, sourceColumn]) => {
-      if (subBlockId === undefined) {
-        subBlockId = blockId
-      }
-      tbAssert(sourceColumn,
-               `[block ${subBlockId}] no column specified for summarize`)
-      tbAssert(this.hasColumns(sourceColumn),
-               `[block ${subBlockId}] unknown column "${sourceColumn}" in summarize`)
-      const newColumn = `${sourceColumn}_${func.colName}`
-      summarized[newColumn] = groups.map(group => func(group, sourceColumn))
-    })
-
-    // Pivot.
-    const result = []
-    groups.forEach((group, i) => {
-      const row = {}
-      if (wasGrouped) {
-        row._group_ = i
-      }
-      result.push(row)
-    })
-    Object.keys(summarized).forEach(newColumn => {
-      groups.forEach((group, i) => {
-        result[i][newColumn] = summarized[newColumn][i]
-      })
-    })
-
-    // Create new dataframe.
-    return new TidyBlocksDataFrame(result)
-  }
-
-  //
-  // Put the data into groups.
-  //
-  _groupify () {
-    const wasGrouped = this.hasColumns('_group_')
-    const groups = []
-    if (wasGrouped) {
-      this.data.forEach(row => {
-        if (row._group_ < groups.length) {
-          groups[row._group_].push(row)
-        }
-        else {
-          groups.push([row])
-        }
-      })
-    }
-    else {
-      groups.push(this.data)
-    }
-    return [wasGrouped, groups]
-  }
-
-  /**
-   * Remove grouping if present.
-   * @returns A new dataframe.
-   */
-  ungroup (blockId) {
-    tbAssert(this.hasColumns('_group_'),
-             `[block ${blockId}] cannot ungroup data that is not grouped`)
-    const newData = this.data.map(row => {
-      row = {...row}
-      delete row._group_
-      return row
-    })
-    return new TidyBlocksDataFrame(newData)
-  }
-
-  //------------------------------------------------------------------------------
-
-  /**
-   * Join two tables on equality between values in specified columns.
-   * @param {function} getDataFxn How to look up data by name.
-   * @param {string} leftTable Notification name of left table to join.
-   * @param {string} leftColumn Name of column from left table.
-   * @param {string} rightTable Notification name of right table to join.
-   * @param {string} rightColumn Name of column from right table.
-   * @returns A new dataframe.
-   */
-  join (getDataFxn, leftTableName, leftColumn, rightTableName, rightColumn) {
-
-    const _addFieldsExcept = (result, tableName, row, exceptName) => {
-      Object.keys(row)
-        .filter(key => (key != exceptName))
-        .forEach(key => {result[`${tableName}_${key}`] = row[key]})
-    }
-
-    const leftFrame = getDataFxn(leftTableName)
-    tbAssert(leftFrame.hasColumns(leftColumn),
-             `left table does not have column ${leftColumn}`)
-    const rightFrame = getDataFxn(rightTableName)
-    tbAssert(rightFrame.hasColumns(rightColumn),
-             `right table does not have column ${rightColumn}`)
-
-    const result = []
-    for (let leftRow of leftFrame.data) { 
-      for (let rightRow of rightFrame.data) { 
-        if (leftRow[leftColumn] === rightRow[rightColumn]) {
-          const row = {'_join_': leftRow[leftColumn]}
-          _addFieldsExcept(row, leftTableName, leftRow, leftColumn)
-          _addFieldsExcept(row, rightTableName, rightRow, rightColumn)
-          result.push(row)
-        }
-      }
-    } 
-
-    return new TidyBlocksDataFrame(result)
-  }
-
-  /**
-   * Notify the pipeline manager that this pipeline has completed so that downstream joins can run.
-   * Note that this function is called at the end of a pipeline, so it does not return 'this' to support method chaining.
-   * @param {function} notifyFxn Callback functon to do notification (to decouple this class from the manager).
-   * @param {string} name Name of this pipeline.
-   */
-  notify (notifyFxn, name) {
-    notifyFxn(name, this)
-  }
-
-  //------------------------------------------------------------------------------
-
-  /**
-   * Call a plotting function. This is in this class to support method chaining
-   * and to decouple this class from the real plotting functions so that tests
-   * will run.
-   * @param {object} environment Connection to the outside world.
-   * @param {object} spec Vega-Lite specification with empty 'values' (filled in here with actual data before plotting).
-   * @returns This object.
-   */
-  plot (environment, spec) {
-    environment.displayTable(this.data)
-    if (Object.keys(spec).length !== 0) {
-      spec.data.values = this.data
-      environment.displayPlot(spec)
-    }
-    return this
-  }
-
-  //------------------------------------------------------------------------------
-
-  /**
-   * Test whether the dataframe has the specified columns.
-   * @param {string[]} names Names of column to check for.
-   * @returns {Boolean} Are columns present?
-   */
-  hasColumns (names) {
-    if (this.data.length === 0) {
-      return false
-    }
-    if (typeof names === 'string') {
-      names = [names]
-    }
-    return names.every(n => (n in this.data[0]))
-  }
-
-  /**
-   * Convert columns to numeric values.
-   * @param {string[]} columns The names of the columns to convert.
-   * @returns This object.
-   */
-  toNumber (blockId, columns) {
-    this.data.forEach(row => {
-      columns.forEach(col => {
-        row[col] = parseFloat(tbGet(blockId, row, col))
-      })
-    })
-    return this
-  }
-}
-
-//--------------------------------------------------------------------------------
-
-/**
- * Manage execution of all data pipelines.
- */
-export class TidyBlocksManagerClass {
-
-  /**
-   * Create manager.
-   */
-  constructor () {
-    this.reset()
-  }
-
-  /**
-   * Record a newly-created block and add the ID to its tooltip.
-   * @param {block} block Newly-created block.
-   */
-  addNewBlock (block) {
-    block.tbId = this.nextBlockId
-    block.tooltip = `[${block.tbId}] ${block.tooltip}`
-    this.blocks.set(this.nextBlockId, block)
-    this.nextBlockId += 1
-  }
-
-  /**
-   * Get the number of blocks that have been created (including ones that have
-   * now been deleted).
-   */
-  getNumBlocks () {
-    return this.blocks.size
-  }
-
-  /**
-   * Get a block by serial number.
-   * @param {number} blockId Serial number of block.
-   * @returns {block} The block or null.
-   */
-  getBlock (blockId) {
-    return this.blocks.has(blockId) ? this.blocks.get(blockId) : null
-  }
-
-  /**
-   * Get the output of a completed pipeline.
-   * @param {string} name Name of completed pipeline.
-   * @return TidyBlocksDataFrame.
-   */
-  getResult (name) {
-    return this.results.get(name)
-  }
-
-  /**
-   * Notify the manager that a named pipeline has finished running.
-   * This enqueues pipeline functions to run if their dependencies are satisfied.
-   * @param {string} name Name of the pipeline that just completed.
-   * @param {Object} dataFrame The TidyBlocksDataFrame produced by the pipeline.
-   */
-  notify (name, dataFrame) {
-    this.results.set(name, dataFrame)
-    this.waiting.forEach((dependencies, func) => {
-      dependencies.delete(name)
-      if (dependencies.size === 0) {
-        this.queue.push(func)
-      }
-    })
-  }
-
-  /**
-   * Register a new pipeline function with what it depends on and what it produces.
-   * @param {string[]} depends Names of things this pipeline depends on (if it starts with a join).
-   * @param {function} func Function encapsulating pipeline to run.
-   * @param {function} produces Name of this pipeline (used to trigger things waiting for it).
-   */
-  register (depends, func, produces) {
-    if (depends.length == 0) {
-      this.queue.push(func)
-    }
-    else {
-      this.waiting.set(func, new Set(depends))
-    }
-  }
-
-  /**
-   * Reset internal state.
-   */
-  reset () {
-    this.queue = []
-    this.waiting = new Map()
-    this.results = new Map()
-    this.blocks = new Map()
-    this.nextBlockId = 0
-  }
-
-  /**
-   * Run all pipelines in an order that respects dependencies.
-   * This depends on `notify` to add pipelines to the queue.
-   * @param {object} environment How to interact with the outside world.
-   */
-  run (environment) {
-    environment.displayError('') // clear legacy errors
-    try {
-      let code = environment.getCode()
-      if (! code.includes(TIDYBLOCKS_START)) {
-        throw new Error('pipeline does not have a valid start block')
-      }
-      code = fixCode(code)
-      eval(code)
-      while (this.queue.length > 0) {
-        const func = this.queue.shift()
-        func()
-      }
-    }
-    catch (err) {
-      environment.displayError(err.message)
-    }
-  }
-}
-
-/**
- * Singleton instance of manager.
- */
-const TidyBlocksManager = new TidyBlocksManagerClass()
-
-//--------------------------------------------------------------------------------

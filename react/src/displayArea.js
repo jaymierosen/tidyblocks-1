@@ -10,6 +10,8 @@ import { JsonToTable } from "react-json-to-table";
 import "./index.css"
 import Table from './Table.js'
 
+import TestEnvironment from "./tidyblocks/TestEnvironment"
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -92,7 +94,7 @@ export default function ScrollableTabsButtonAuto({code, dataFrame, plot, error})
         </StyledTabs>
       </div>
       <TabPanel value={value} index={0}>
-      <Table data={dataFrame} />
+      <TestEnvironment toEval={"This is a test"} />
       </TabPanel>
       <TabPanel id="plotPanel" value={value} index={1}>
         {plot}

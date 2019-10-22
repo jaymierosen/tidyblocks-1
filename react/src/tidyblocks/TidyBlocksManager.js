@@ -1,4 +1,9 @@
-export default class TidyBlocksManagerClass extends React.Component {
+import React from 'react'
+import { fixCode } from './tidyblocks'
+
+const TIDYBLOCKS_START = '/* tidyblocks start */'
+
+export default class TidyBlocksManager extends React.Component {
 
   constructor () {
     this.reset()
@@ -107,8 +112,10 @@ export default class TidyBlocksManagerClass extends React.Component {
     }
   }
 
+  /*
   render() {
     return (<div>{this.props.enviornment()}</div>)
   }
+  */
   
 }

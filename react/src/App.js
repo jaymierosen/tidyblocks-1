@@ -4,6 +4,8 @@ import Blockly from 'blockly'
 import PropTypes from 'prop-types';
 import ReactEnvironment from './tidyblocks/ReactEnvironment'
 
+import TestEnvironment from "./tidyblocks/TestEnvironment"
+
 import SplitterLayout from "react-splitter-layout";
 import Fab from "@material-ui/core/Fab";
 import { withStyles } from '@material-ui/styles';
@@ -13,7 +15,9 @@ import DisplayArea from "./displayArea"
 import { ThemeProvider } from "@material-ui/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
 
-import {TidyBlocksManagerClass } from "./tidyblocks/tidyblocks"
+import { TidyBlocksManager } from "./tidyblocks/TidyBlocksManager"
+
+import {fixCode} from "./tidyblocks/tidyblocks"
 
 import './blocks/data_colors';
 import './generators/js/data_colors.js'
@@ -100,11 +104,6 @@ import "./splitter-style-sheet.css";
 
 const TIDYBLOCKS_START = '/* tidyblocks start */'
 const TIDYBLOCKS_END = '/* tidyblocks end */'
-
-/**
- * Singleton instance of manager.
- */
-const TidyBlocksManager = new TidyBlocksManagerClass()
 
 /**
  * Get the suffix for registering blocks.
@@ -361,12 +360,15 @@ class App extends React.Component {
     }
       this.getCode = this.getCode.bind(this)
       this.getXML = this.getXML.bind(this)
+      this.runCode = this.runCode.bind(this)
   }
-
+  
+  
   runCode() {
-    Blockly.JavaScript.INFINITE_LOOP_TRAP = null
-    TidyBlocksManager.run(new ReactEnvironment())
+    let code = fixCode(this.state.code)
+    console.log(code)
   }
+  
 
   getXML() {
     let xml = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(this.simpleWorkspace.workspace))
@@ -381,7 +383,7 @@ class App extends React.Component {
 
   componentDidMount() {
     this.simpleWorkspace.workspace.addChangeListener((event) => {
-       this.runCode();
+       //this.runCode();
        if (event.type != 'ui') {
         this.getXML()
         this.getCode()
