@@ -390,6 +390,7 @@ function dragElement( element, direction) {
     }
     
   function onMouseMove(e){
+    console.log('working?');
     //console.log("mouse move: " + e.clientX);
     var delta = {x: e.clientX - md.e.x,
     y: e.clientY - md.e.y};
