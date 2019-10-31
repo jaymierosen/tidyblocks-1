@@ -26,8 +26,8 @@ header {
   padding: 30px 10%;
 }
 
-.blockDisplay {
-  position: absolute; 
+#blocklyArea {
+  position: absolute;
 }
 
 .logo {
@@ -365,11 +365,6 @@ h5 {
     
     .select-selected {
       background-color: #fff;
-    }
-
-    .blocklySVG {
-      width: 100%;
-      z-index: 0;
     }
 
     .custom-select {
